@@ -1,7 +1,8 @@
 import React, { useState } from "react";
 import { FaUser, FaShoppingCart, FaChevronDown } from "react-icons/fa";
+import Logo from "../../assets/Logo.jpg";
 
-const Navbar = () => {
+function Navbar() {
   const [isServicesOpen, setIsServicesOpen] = useState(false);
 
   const toggleServicesDropdown = () => {
@@ -12,6 +13,7 @@ const Navbar = () => {
     <nav className=" bg-teal-900 p-4 shadow-lg">
       <div className="container mx-auto flex justify-between items-center">
         <div className="text-white text-2xl font-bold flex items-center space-x-2">
+          CA &nbsp;
           <FaShoppingCart size={24} />
           <span>Mall Management</span>
         </div>
@@ -75,7 +77,7 @@ const Navbar = () => {
             </li>
             <li>
               <a
-                href="#contact"
+                href="/contact"
                 className="text-white hover:text-gray-500 hover:scale-105 font-bold text-xl"
               >
                 Contact
@@ -94,6 +96,6 @@ const Navbar = () => {
       </div>
     </nav>
   );
-};
+}
 
 export default Navbar;
