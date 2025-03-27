@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { FaUser, FaShoppingCart, FaChevronDown } from "react-icons/fa";
-import Logo from "../../assets/Logo.jpg";
+
 
 function Navbar() {
   const [isServicesOpen, setIsServicesOpen] = useState(false);
