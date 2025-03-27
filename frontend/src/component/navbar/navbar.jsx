@@ -47,7 +47,7 @@ const Navbar = () => {
                   <ul className="">
                     <li>
                       <a
-                        href="#service1"
+                        href="/parkinghome"
                         className="block px-4 py-2 text-gray-800 hover:bg-gray-500 hover:text-white"
                       >
                         Parking Services

@@ -3,11 +3,14 @@ import Home from "../component/pages/home";
 import MembershipPage from "../component/pages/membership";
 import Navbar from "../component/navbar/navbar";
 import Footer from "../component/footer/footer";
-import MembershipEnrollment from "../component/pages/test";
-import SpendingGoals from "../component/pages/test";
-import MobileHomeScreen from "../component/pages/test";
-import ExclusiveOffers from "../component/pages/test";
-import CustomerDashboard from "../component/pages/test";
+
+
+import AddParking from "../component/Parking/AddParking";
+import EditParking from "../component/Parking/EditParking";
+import ParkingDashboard from "../component/Parking/ParkingDashboard";
+import ParkingList from "../component/Parking/ParkingList";
+import ParkingHome from "../component/Parking/ParkingHome";
+import ParkingAdd from "../component/Parking/adminparking/parkingadd";
 
 function App() {
   const routes = [
@@ -19,10 +22,31 @@ function App() {
       path: "/membership",
       element: <MembershipPage />,
     },
+
     {
-      path: "/test",
-      element: <CustomerDashboard />,
+      path: "/parkingHome",
+      element: <ParkingHome />,
     },
+    {
+      path: "/addparking",
+      element: <AddParking />,
+    },
+    {
+      path: "/editparking",
+      element: <EditParking />,
+    },
+    {
+      path: "/parkingdashboard",
+      element: <ParkingDashboard />,
+    },
+    {
+      path: "/parknglist",
+      element: <ParkingList />,
+    } ,
+    {
+      path: "/parkingadd",
+      element: <ParkingAdd />,
+    } 
   ];
   return (
     <BrowserRouter>
