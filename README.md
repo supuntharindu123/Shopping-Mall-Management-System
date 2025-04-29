@@ -1,4 +1,4 @@
-# Mall Management System
+Shopping Mall Management System
 
 The **Mall Management System** is a comprehensive platform designed to streamline the management of malls, stores, and services. It provides features for administrators, store owners, and customers, ensuring an optimized and seamless experience for all stakeholders.
 
