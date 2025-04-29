@@ -156,6 +156,38 @@ const MembershipAdmin = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-teal-50 to-blue-50 p-4 md:p-8">
+      <div className="bg-teal-900 text-white p-4 flex justify-between items-center mb-5">
+        <div className="text-xl font-bold">Admin Dashboard</div>
+        <div className="flex space-x-4">
+          <a
+            href="/admin"
+            className="bg-teal-800 hover:bg-teal-700 px-4 py-2 rounded"
+          >
+            User Management
+          </a>
+          <a
+            href="/store"
+            className="bg-teal-800 hover:bg-teal-700 px-4 py-2 rounded"
+          >
+            Store Management
+          </a>
+          <a
+            href="/parkingdashboard"
+            className="bg-teal-800 hover:bg-teal-700 px-4 py-2 rounded"
+          >
+            Parking Management
+          </a>
+          <a
+            href="/membershipadmin"
+            className="bg-teal-800 hover:bg-teal-700 px-4 py-2 rounded"
+          >
+            Transaction
+          </a>
+          <a className="bg-teal-800 hover:bg-teal-700 px-4 py-2 rounded">
+            Logout
+          </a>
+        </div>
+      </div>
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8">

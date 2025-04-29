@@ -1,181 +1,412 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { motion } from "framer-motion";
+import Mall from "../../assets/Mall01.jpg";
+import MallImg from "../../assets/Mall02.jpg";
+import MallImgs from "../../assets/Mall03.jpg";
+import Logo from "../../assets/CA01.jpg";
+import {
+  FiCheck,
+  FiAward,
+  FiShoppingBag,
+  FiStar,
+  FiCreditCard,
+} from "react-icons/fi";
 
-const packages = [
+const images = [Mall, MallImg, MallImgs];
+
+const membershipPackages = [
   {
     id: 1,
     name: "Foodie Delight",
     price: 10,
+    category: "Food",
     benefits: [
       "10% off all food and beverage purchases",
       "Free drink or dessert with every $50 spent",
-      "Exclusive access to food tastings and chef’s table events",
+      "Exclusive access to food tastings",
       "Complimentary meal after 10 visits",
     ],
+    pointsRate: 1, // points per $1 spent
   },
   {
     id: 2,
     name: "Fashionista",
     price: 15,
+    category: "Fashion",
     benefits: [
-      "15% off all fashion and apparel purchases",
-      "Early access to seasonal sales and new collections",
-      "Free personal styling session every 3 months",
+      "15% off all fashion purchases",
+      "Early access to seasonal sales",
+      "Free personal styling session",
       "Buy 3, Get 1 Free on selected items",
     ],
+    pointsRate: 2,
   },
   {
     id: 3,
     name: "Entertainment Enthusiast",
     price: 12,
+    category: "Entertainment",
     benefits: [
       "20% off movie tickets and arcade tokens",
-      "Free popcorn and drink with every movie ticket purchase",
-      "Exclusive access to VIP movie premieres and events",
-      "Buy 4 movie tickets, get the 5th one free",
+      "Free popcorn and drink with every movie",
+      "Exclusive access to VIP premieres",
+      "Buy 4 tickets, get 5th free",
     ],
+    pointsRate: 1,
   },
   {
     id: 4,
     name: "Lifestyle Pro",
     price: 10,
+    category: "Lifestyle",
     benefits: [
-      "10% off all lifestyle and essential purchases",
+      "10% off lifestyle essentials",
       "Free grocery delivery for orders above $50",
-      "Discounted wellness packages (e.g., spa treatments, gym memberships)",
-      "Buy 1, Get 1 Free on selected wellness products",
+      "Discounted wellness packages",
+      "Buy 1, Get 1 Free on wellness products",
     ],
+    pointsRate: 1,
   },
   {
     id: 5,
     name: "Mall Explorer Premium",
     price: 25,
+    category: "All",
     benefits: [
-      "10% off all purchases (food, fashion, entertainment, lifestyle)",
+      "10% off all purchases",
       "Free VIP parking for a month",
-      "Exclusive access to all mall events and promotions",
-      "Complimentary meal, movie ticket, and spa session every quarter",
+      "Exclusive access to all events",
+      "Complimentary meal, movie, and spa quarterly",
     ],
+    pointsRate: 2,
   },
 ];
 
-const PaymentPage = () => {
+const MembershipPage = () => {
   const [selectedPackage, setSelectedPackage] = useState(null);
-  const [paymentDetails, setPaymentDetails] = useState({
-    cardNumber: "",
-    expiryDate: "",
-    cvv: "",
-  });
+  const [currentStep, setCurrentStep] = useState(1); // 1: Select package, 2: Payment
+  const [index, setIndex] = useState(0);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setIndex((prevIndex) => (prevIndex + 1) % images.length);
+    }, 3000);
+    return () => clearInterval(interval);
+  }, []);
 
   const handlePackageSelect = (pkg) => {
     setSelectedPackage(pkg);
+    setCurrentStep(2);
   };
 
-  const handlePaymentSubmit = (e) => {
-    e.preventDefault();
-    alert(
-      `Payment successful! You have subscribed to the ${selectedPackage.name} package.`
-    );
+  const handleBackToPackages = () => {
+    setCurrentStep(1);
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 p-8">
-      <h1 className="text-3xl font-bold text-center mb-8 text-teal-900">
-        Membership Payment
-      </h1>
+    <div className="min-h-screen bg-gray-50">
+      {/* Hero Section with Slideshow */}
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.8 }}
+        className="relative w-full h-96 overflow-hidden"
+      >
+        <motion.img
+          key={index}
+          src={images[index]}
+          alt="Slideshow"
+          className="w-full h-full object-cover"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          transition={{ duration: 0.8 }}
+        />
+        <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center">
+          <div className="text-center text-white px-4">
+            <div className="flex justify-center mb-6">
+              <img src={Logo} alt="logo" width={120} />
+            </div>
+            <h1 className="text-4xl md:text-5xl font-bold mb-4">
+              Crystal Arcade Membership
+            </h1>
+            <p className="text-xl md:text-2xl">
+              Unlock exclusive benefits and rewards tailored to your shopping
+              style
+            </p>
+          </div>
+        </div>
+      </motion.div>
 
-      {/* Package Selection Section */}
-      <div className="mb-8">
-        <h2 className="text-2xl font-bold mb-4 text-teal-900">
-          Select a Package
-        </h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {packages.map((pkg) => (
+      {/* Main Content */}
+      <div className="container mx-auto px-4 py-12 max-w-6xl">
+        {/* Step Indicator */}
+        <div className="flex justify-center mb-12">
+          <div className="flex items-center">
             <div
-              key={pkg.id}
-              className={`bg-white p-6 rounded-lg shadow-lg hover:shadow-xl transition-shadow cursor-pointer ${
-                selectedPackage?.id === pkg.id ? "border-2 border-teal-900" : ""
+              className={`flex flex-col items-center ${
+                currentStep >= 1 ? "text-teal-900" : "text-gray-400"
               }`}
-              onClick={() => handlePackageSelect(pkg)}
             >
-              <h2 className="text-2xl font-bold mb-4 text-teal-900">
-                {pkg.name}
-              </h2>
-              <p className="text-gray-700 mb-4">${pkg.price}/month</p>
-              <ul className="list-disc list-inside mb-4">
-                {pkg.benefits.map((benefit, index) => (
-                  <li key={index} className="text-gray-600">
-                    {benefit}
-                  </li>
-                ))}
-              </ul>
+              <div
+                className={`w-10 h-10 rounded-full flex items-center justify-center ${
+                  currentStep >= 1 ? "bg-teal-900 text-white" : "bg-gray-200"
+                }`}
+              >
+                {currentStep > 1 ? <FiCheck size={20} /> : 1}
+              </div>
+              <span className="mt-2">Choose Package</span>
             </div>
-          ))}
+            <div
+              className={`w-16 md:w-32 h-1 mx-2 ${
+                currentStep >= 2 ? "bg-teal-900" : "bg-gray-200"
+              }`}
+            ></div>
+            <div
+              className={`flex flex-col items-center ${
+                currentStep >= 2 ? "text-teal-900" : "text-gray-400"
+              }`}
+            >
+              <div
+                className={`w-10 h-10 rounded-full flex items-center justify-center ${
+                  currentStep >= 2 ? "bg-teal-900 text-white" : "bg-gray-200"
+                }`}
+              >
+                {currentStep > 2 ? <FiCheck size={20} /> : 2}
+              </div>
+              <span className="mt-2">Payment</span>
+            </div>
+          </div>
         </div>
-      </div>
 
-      {/* Payment Form Section */}
-      {selectedPackage && (
-        <div className="bg-white p-6 rounded-lg shadow-lg">
-          <h2 className="text-2xl font-bold mb-4 text-teal-900">
-            Payment Details
-          </h2>
-          <form onSubmit={handlePaymentSubmit}>
-            <div className="mb-4">
-              <label className="block text-gray-700 mb-2">Card Number</label>
-              <input
-                type="text"
-                className="w-full p-2 border rounded-lg"
-                placeholder="1234 5678 9012 3456"
-                value={paymentDetails.cardNumber}
-                onChange={(e) =>
-                  setPaymentDetails({
-                    ...paymentDetails,
-                    cardNumber: e.target.value,
-                  })
-                }
-                required
-              />
-            </div>
-            <div className="mb-4">
-              <label className="block text-gray-700 mb-2">Expiry Date</label>
-              <input
-                type="text"
-                className="w-full p-2 border rounded-lg"
-                placeholder="MM/YY"
-                value={paymentDetails.expiryDate}
-                onChange={(e) =>
-                  setPaymentDetails({
-                    ...paymentDetails,
-                    expiryDate: e.target.value,
-                  })
-                }
-                required
-              />
-            </div>
-            <div className="mb-4">
-              <label className="block text-gray-700 mb-2">CVV</label>
-              <input
-                type="text"
-                className="w-full p-2 border rounded-lg"
-                placeholder="123"
-                value={paymentDetails.cvv}
-                onChange={(e) =>
-                  setPaymentDetails({ ...paymentDetails, cvv: e.target.value })
-                }
-                required
-              />
-            </div>
-            <button
-              type="submit"
-              className="bg-teal-900 text-white px-6 py-2 rounded-lg hover:bg-teal-800"
-            >
-              Pay ${selectedPackage.price}
-            </button>
-          </form>
-        </div>
-      )}
+        {currentStep === 1 && (
+          <PackageSelection
+            packages={membershipPackages}
+            onSelect={handlePackageSelect}
+          />
+        )}
+
+        {currentStep === 2 && selectedPackage && (
+          <PaymentForm
+            package={selectedPackage}
+            onBack={handleBackToPackages}
+          />
+        )}
+      </div>
     </div>
   );
 };
 
-export default PaymentPage;
+const PackageSelection = ({ packages, onSelect }) => {
+  return (
+    <div>
+      <h2 className="text-3xl font-bold text-center mb-8 text-teal-900">
+        Choose Your Membership
+      </h2>
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {packages.map((pkg) => (
+          <div
+            key={pkg.id}
+            className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300"
+          >
+            <div className="bg-teal-900 text-white p-4">
+              <h3 className="text-xl font-bold">{pkg.name}</h3>
+              <p className="text-teal-100">${pkg.price}/month</p>
+            </div>
+            <div className="p-6">
+              <div className="mb-4">
+                <span className="inline-block bg-teal-100 text-teal-900 px-2 py-1 rounded-full text-xs font-semibold">
+                  {pkg.category === "All" ? "All Categories" : pkg.category}
+                </span>
+                <span className="ml-2 inline-block bg-yellow-100 text-yellow-900 px-2 py-1 rounded-full text-xs font-semibold">
+                  {pkg.pointsRate}x Points
+                </span>
+              </div>
+              <ul className="space-y-2 mb-6">
+                {pkg.benefits.map((benefit, index) => (
+                  <li key={index} className="flex items-start">
+                    <FiCheck className="text-teal-900 mt-1 mr-2 flex-shrink-0" />
+                    <span>{benefit}</span>
+                  </li>
+                ))}
+              </ul>
+              <button
+                onClick={() => onSelect(pkg)}
+                className="w-full bg-teal-900 hover:bg-teal-800 text-white py-2 rounded-lg transition-colors duration-300 flex items-center justify-center"
+              >
+                <FiShoppingBag className="mr-2" />
+                Select Package
+              </button>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+};
+
+const PaymentForm = ({ package: pkg, onBack }) => {
+  const [paymentDetails, setPaymentDetails] = useState({
+    cardNumber: "",
+    expiryDate: "",
+    cvv: "",
+    nameOnCard: "",
+  });
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    alert(`Success! You've subscribed to the ${pkg.name} package.`);
+  };
+
+  return (
+    <div className="max-w-2xl mx-auto">
+      <div className="bg-white rounded-lg shadow-md overflow-hidden">
+        <div className="bg-teal-900 text-white p-4">
+          <h3 className="text-xl font-bold">Complete Your Membership</h3>
+          <p className="text-teal-100">Selected: {pkg.name} Package</p>
+        </div>
+
+        <div className="p-6">
+          <div className="flex justify-between items-center mb-6">
+            <div>
+              <h4 className="font-bold text-lg text-teal-900">{pkg.name}</h4>
+              <p className="text-gray-600">${pkg.price}/month</p>
+            </div>
+            <button
+              onClick={onBack}
+              className="text-teal-900 hover:text-teal-700 font-medium flex items-center"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                className="h-5 w-5 mr-1"
+                viewBox="0 0 20 20"
+                fill="currentColor"
+              >
+                <path
+                  fillRule="evenodd"
+                  d="M9.707 16.707a1 1 0 01-1.414 0l-6-6a1 1 0 010-1.414l6-6a1 1 0 011.414 1.414L5.414 9H17a1 1 0 110 2H5.414l4.293 4.293a1 1 0 010 1.414z"
+                  clipRule="evenodd"
+                />
+              </svg>
+              Change Package
+            </button>
+          </div>
+
+          <form onSubmit={handleSubmit}>
+            <div className="space-y-4">
+              <div>
+                <label className="block text-gray-700 mb-1">Card Number</label>
+                <div className="relative">
+                  <FiCreditCard className="absolute left-3 top-3 text-gray-400" />
+                  <input
+                    type="text"
+                    placeholder="1234 5678 9012 3456"
+                    className="w-full pl-10 p-2 border rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-teal-500"
+                    value={paymentDetails.cardNumber}
+                    onChange={(e) =>
+                      setPaymentDetails({
+                        ...paymentDetails,
+                        cardNumber: e.target.value,
+                      })
+                    }
+                    required
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-gray-700 mb-1">
+                    Expiry Date
+                  </label>
+                  <input
+                    type="text"
+                    placeholder="MM/YY"
+                    className="w-full p-2 border rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-teal-500"
+                    value={paymentDetails.expiryDate}
+                    onChange={(e) =>
+                      setPaymentDetails({
+                        ...paymentDetails,
+                        expiryDate: e.target.value,
+                      })
+                    }
+                    required
+                  />
+                </div>
+                <div>
+                  <label className="block text-gray-700 mb-1">CVV</label>
+                  <input
+                    type="text"
+                    placeholder="123"
+                    className="w-full p-2 border rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-teal-500"
+                    value={paymentDetails.cvv}
+                    onChange={(e) =>
+                      setPaymentDetails({
+                        ...paymentDetails,
+                        cvv: e.target.value,
+                      })
+                    }
+                    required
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-gray-700 mb-1">Name on Card</label>
+                <input
+                  type="text"
+                  placeholder="John Doe"
+                  className="w-full p-2 border rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-teal-500"
+                  value={paymentDetails.nameOnCard}
+                  onChange={(e) =>
+                    setPaymentDetails({
+                      ...paymentDetails,
+                      nameOnCard: e.target.value,
+                    })
+                  }
+                  required
+                />
+              </div>
+            </div>
+
+            <div className="mt-8 bg-gray-50 p-4 rounded-lg">
+              <div className="flex justify-between items-center mb-2">
+                <span className="text-gray-600">Package Price:</span>
+                <span className="font-medium">${pkg.price}/month</span>
+              </div>
+              <div className="flex justify-between items-center font-bold text-lg text-teal-900">
+                <span>Total Due Today:</span>
+                <span>${pkg.price}</span>
+              </div>
+            </div>
+
+            <button
+              type="submit"
+              className="w-full mt-6 bg-teal-900 hover:bg-teal-800 text-white py-3 rounded-lg font-medium transition-colors duration-300 flex items-center justify-center"
+            >
+              <FiAward className="mr-2" />
+              Complete Membership Enrollment
+            </button>
+          </form>
+        </div>
+      </div>
+
+      <div className="mt-8 bg-teal-50 border border-teal-100 rounded-lg p-6">
+        <h4 className="font-bold text-teal-900 mb-3 flex items-center">
+          <FiStar className="mr-2" />
+          Membership Benefits
+        </h4>
+        <ul className="space-y-2">
+          {pkg.benefits.map((benefit, index) => (
+            <li key={index} className="flex items-start">
+              <FiCheck className="text-teal-900 mt-1 mr-2 flex-shrink-0" />
+              <span>{benefit}</span>
+            </li>
+          ))}
+        </ul>
+      </div>
+    </div>
+  );
+};
+
+export default MembershipPage;
