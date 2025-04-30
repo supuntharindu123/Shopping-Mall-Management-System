@@ -1,7 +1,8 @@
 import React, { useState } from "react";
 import { FaUser, FaShoppingCart, FaChevronDown } from "react-icons/fa";
+import Logo from "../../assets/CA01.jpg";
 
-const Navbar = () => {
+function Navbar() {
   const [isServicesOpen, setIsServicesOpen] = useState(false);
 
   const toggleServicesDropdown = () => {
@@ -12,8 +13,13 @@ const Navbar = () => {
     <nav className=" bg-teal-900 p-4 shadow-lg">
       <div className="container mx-auto flex justify-between items-center">
         <div className="text-white text-2xl font-bold flex items-center space-x-2">
-          <FaShoppingCart size={24} />
-          <span>Mall Management</span>
+          <div className="flex items-center flex-col">
+            <img src={Logo} alt="logo" width={60} />
+
+            {/* CA &nbsp;
+          <FaShoppingCart size={24} /> */}
+            <span className=" font-extrabold text-xl">Crystal Arcade </span>
+          </div>
         </div>
 
         <div className="flex items-center space-x-6">
@@ -21,7 +27,7 @@ const Navbar = () => {
             <li>
               <a
                 href="/"
-                className="text-white hover:text-gray-400 font-bold text-xl"
+                className="text-white hover:text-gray-400 font-bold text-2xl"
               >
                 Home
               </a>
@@ -29,7 +35,7 @@ const Navbar = () => {
             <li>
               <a
                 href="#stores"
-                className="text-white hover:text-gray-400 font-bold text-xl"
+                className="text-white hover:text-gray-400 font-bold text-2xl"
               >
                 Stores
               </a>
@@ -39,7 +45,7 @@ const Navbar = () => {
                 onClick={toggleServicesDropdown}
                 className="text-white hover:text-gray-400 flex items-center focus:outline-none"
               >
-                <span className="font-bold text-xl">Services</span>
+                <span className="font-bold text-2xl">Services</span>
                 <FaChevronDown size={14} className="ml-1" />
               </button>
               {isServicesOpen && (
@@ -47,7 +53,7 @@ const Navbar = () => {
                   <ul className="">
                     <li>
                       <a
-                        href="#service1"
+                        href="/parkingHome"
                         className="block px-4 py-2 text-gray-800 hover:bg-gray-500 hover:text-white"
                       >
                         Parking Services
@@ -55,18 +61,18 @@ const Navbar = () => {
                     </li>
                     <li>
                       <a
-                        href="#service2"
+                        href="/Faq"
                         className="block px-4 py-2 text-gray-800 hover:bg-gray-500 hover:text-white"
                       >
-                        Service 2
+                        Help
                       </a>
                     </li>
                     <li>
                       <a
-                        href="#service3"
+                        href="/security"
                         className="block px-4 py-2 text-gray-800 hover:bg-gray-500 hover:text-white"
                       >
-                        Service 3
+                        Security
                       </a>
                     </li>
                   </ul>
@@ -75,8 +81,8 @@ const Navbar = () => {
             </li>
             <li>
               <a
-                href="#contact"
-                className="text-white hover:text-gray-500 hover:scale-105 font-bold text-xl"
+                href="/contact"
+                className="text-white hover:text-gray-500 hover:scale-105 font-bold text-2xl"
               >
                 Contact
               </a>
@@ -88,12 +94,12 @@ const Navbar = () => {
             className="flex items-center space-x-2 bg-gray-600 text-white px-4 py-2 rounded-lg text-sm font-semibold transition hover:bg-gray-500"
           >
             <FaUser size={18} />
-            <span>Login</span>
+            <span className="text-xl">Login</span>
           </a>
         </div>
       </div>
     </nav>
   );
-};
+}
 
 export default Navbar;
