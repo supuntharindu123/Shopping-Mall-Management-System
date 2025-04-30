@@ -1,164 +1,152 @@
-import { useState } from "react";
-import {
-  FaCheckCircle,
-  FaCreditCard,
-  FaStar,
-  FaGift,
-  FaShoppingCart,
-  FaUtensils,
-  FaUsers,
-} from "react-icons/fa";
+import React, { useState } from "react";
+import { motion } from "framer-motion";
 
-export default function MembershipPage() {
-  const [selectedPlan, setSelectedPlan] = useState(null);
+const packages = [
+  {
+    name: "Foodie Delight",
+    price: 10,
+    benefits: [
+      "10% off all food and beverage purchases",
+      "Free drink or dessert with every $50 spent",
+      "Exclusive access to food tastings and chef’s table events",
+      "Complimentary meal after 10 visits",
+    ],
+    rewards:
+      "Earn 1 point for every $1 spent on food and beverages. Redeem points for free meals, discounts, or VIP dining experiences.",
+    example:
+      "A customer who spends $200/month on food can save $20 and earn 200 points, redeemable for a free meal.",
+  },
+  {
+    name: "Fashionista",
+    price: 15,
+    benefits: [
+      "15% off all fashion and apparel purchases",
+      "Early access to seasonal sales and new collections",
+      "Free personal styling session every 3 months",
+      "Buy 3, Get 1 Free on selected items",
+    ],
+    rewards:
+      "Earn 2 points for every $1 spent on fashion and apparel. Redeem points for discounts, free items, or VIP shopping events.",
+    example:
+      "A customer who spends $300/month on fashion can save $45 and earn 600 points, redeemable for a $30 discount.",
+  },
+  {
+    name: "Entertainment Enthusiast",
+    price: 12,
+    benefits: [
+      "20% off movie tickets and arcade tokens",
+      "Free popcorn and drink with every movie ticket purchase",
+      "Exclusive access to VIP movie premieres and events",
+      "Buy 4 movie tickets, get the 5th one free",
+    ],
+    rewards:
+      "Earn 1 point for every $1 spent on entertainment. Redeem points for free movie tickets, arcade tokens, or event passes.",
+    example:
+      "A customer who spends $100/month on entertainment can save $20 and earn 100 points, redeemable for a free movie ticket.",
+  },
+  {
+    name: "Lifestyle Pro",
+    price: 10,
+    benefits: [
+      "10% off all lifestyle and essential purchases",
+      "Free grocery delivery for orders above $50",
+      "Discounted wellness packages (e.g., spa treatments, gym memberships)",
+      "Buy 1, Get 1 Free on selected wellness products",
+    ],
+    rewards:
+      "Earn 1 point for every $1 spent on lifestyle and essentials. Redeem points for discounts, free products, or wellness services.",
+    example:
+      "A customer who spends $150/month on groceries and wellness can save $15 and earn 150 points, redeemable for a free spa session.",
+  },
+  {
+    name: "Mall Explorer Premium",
+    price: 25,
+    benefits: [
+      "10% off all purchases (food, fashion, entertainment, lifestyle)",
+      "Free VIP parking for a month",
+      "Exclusive access to all mall events and promotions",
+      "Complimentary meal, movie ticket, and spa session every quarter",
+    ],
+    rewards:
+      "Earn 2 points for every $1 spent across all categories. Redeem points for mall-wide discounts, VIP experiences, or gift cards.",
+    example:
+      "A customer who spends $500/month across all categories can save $50 and earn 1,000 points, redeemable for a $50 mall voucher.",
+  },
+];
 
-  const membershipPlans = [
-    {
-      id: 1,
-      name: "Basic",
-      price: "$9.99/month",
-      benefits: [
-        "Earn Reward Points",
-        "Exclusive Deals",
-        "Monthly Discount Coupons",
-        "Priority Customer Support",
-      ],
-    },
-    {
-      id: 2,
-      name: "Premium",
-      price: "$19.99/month",
-      benefits: [
-        "VIP Parking",
-        "Higher Cashback",
-        "Early Access to Sales",
-        "Exclusive Food Court Discounts",
-      ],
-    },
-    {
-      id: 3,
-      name: "Elite",
-      price: "$29.99/month",
-      benefits: [
-        "Free Entertainment",
-        "Personalized Offers",
-        "Access to VIP Lounge",
-        "Personal Shopping Assistance",
-      ],
-    },
-  ];
+const PackageCard = ({ membershipPackage, isSelected, onSelect }) => (
+  <motion.div
+    whileHover={{ scale: 1.05 }}
+    whileTap={{ scale: 0.95 }}
+    className={`relative p-6 rounded-xl shadow-lg border-2 transition-all duration-300 cursor-pointer ${
+      isSelected ? "border-teal-900 bg-gray-50" : "border-gray-400 bg-gray-50"
+    }`}
+    onClick={() => onSelect(membershipPackage.name)}
+    role="button"
+    aria-label={`Select ${membershipPackage.name} package`}
+    tabIndex={0}
+  >
+    {isSelected && (
+      <motion.div
+        className="absolute top-2 right-2 bg-teal-900 text-white px-3 py-1 rounded-full text-xs font-bold"
+        initial={{ opacity: 0, scale: 0.5 }}
+        animate={{ opacity: 1, scale: 1 }}
+      >
+        Selected
+      </motion.div>
+    )}
+    <h2 className="text-2xl font-bold mb-4 text-teal-900">
+      {membershipPackage.name}
+    </h2>
+    <p className="text-gray-700 mb-4">
+      <strong className="text-lg">${membershipPackage.price}</strong>/month
+    </p>
+    <ul className="list-disc list-inside mb-4 text-gray-700">
+      {membershipPackage.benefits.map((benefit, index) => (
+        <li key={index}>{benefit}</li>
+      ))}
+    </ul>
+    <p className="text-gray-700 mb-4">
+      <strong>Rewards:</strong> {membershipPackage.rewards}
+    </p>
+    <p className="text-gray-700 mb-4">
+      <strong>Example:</strong> {membershipPackage.example}
+    </p>
+    <button
+      className="w-full bg-teal-900 text-white px-6 py-2 rounded-lg hover:bg-teal-800 transition-all"
+      onClick={() => onSelect(membershipPackage.name)}
+    >
+      Select Package
+    </button>
+  </motion.div>
+);
+
+const PackageSelection = () => {
+  const [selectedPackage, setSelectedPackage] = useState(null);
 
   return (
-    <div className="flex flex-col items-center p-6 min-h-screen bg-gray-50">
-      {/* Header Section */}
-      <div className="text-center mb-8">
-        <h1 className="text-4xl font-bold text-teal-900 mb-2">
-          Membership & Rewards
-        </h1>
-        <p className="text-gray-600 max-w-2xl">
-          Choose a membership plan and start earning rewards for your purchases.
-          Enjoy exclusive benefits, discounts, and personalized offers tailored
-          just for you.
-        </p>
-      </div>
-
-      {/* Membership Plans */}
-      <div className="grid md:grid-cols-3 gap-6 w-full max-w-6xl">
-        {membershipPlans.map((plan) => (
-          <div
-            key={plan.id}
-            className={`p-6 text-center cursor-pointer border-2 rounded-lg shadow-lg bg-white transition-all duration-300 ${
-              selectedPlan === plan.id
-                ? "border-pink-400 transform scale-105"
-                : "border-gray-200 hover:shadow-xl"
-            }`}
-            onClick={() => setSelectedPlan(plan.id)}
-          >
-            <h2 className="text-2xl font-semibold text-teal-900 mb-2">
-              {plan.name}
-            </h2>
-            <p className="text-gray-500 text-lg mb-4">{plan.price}</p>
-            <ul className="mt-4 space-y-3">
-              {plan.benefits.map((benefit, index) => (
-                <li
-                  key={index}
-                  className="flex items-center justify-start gap-3 text-sm text-gray-700"
-                >
-                  <FaCheckCircle className="text-teal-900" size={18} />{" "}
-                  {benefit}
-                </li>
-              ))}
-            </ul>
-          </div>
+    <div className="min-h-screen bg-gray-50 p-8">
+      <h1 className="text-3xl font-bold text-center mb-8 text-teal-900">
+        Choose Your Membership Package
+      </h1>
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        {packages.map((pkg, index) => (
+          <PackageCard
+            key={index}
+            membershipPackage={pkg}
+            isSelected={selectedPackage === pkg.name}
+            onSelect={setSelectedPackage}
+          />
         ))}
       </div>
-
-      {/* Purchase Button */}
-      <button
-        className={`mt-8 px-8 py-3 bg-teal-900 text-white rounded-lg hover:bg-teal-700 flex items-center transition duration-300 ${
-          !selectedPlan ? "opacity-50 cursor-not-allowed" : ""
-        }`}
-        disabled={!selectedPlan}
-      >
-        <FaCreditCard className="mr-2" size={20} /> Purchase Membership
-      </button>
-
-      {/* Membership Benefits Section */}
-      <div className="mt-12 w-full max-w-6xl p-8 bg-white shadow-lg rounded-xl">
-        <h3 className="text-2xl font-semibold mb-6 text-teal-900">
-          Membership Benefits
-        </h3>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-          {[
-            { icon: <FaStar size={28} />, text: "VIP Access" },
-            { icon: <FaGift size={28} />, text: "Exclusive Rewards" },
-            { icon: <FaCreditCard size={28} />, text: "Cashback Offers" },
-            { icon: <FaCheckCircle size={28} />, text: "Personalized Deals" },
-            { icon: <FaShoppingCart size={28} />, text: "Shopping Discounts" },
-            { icon: <FaUtensils size={28} />, text: "Food Court Discounts" },
-            { icon: <FaUsers size={28} />, text: "VIP Lounge Access" },
-          ].map((benefit, index) => (
-            <div
-              key={index}
-              className="flex flex-col items-center gap-3 p-4 bg-gray-50 rounded-lg shadow-sm hover:shadow-md transition-shadow duration-300"
-            >
-              <div className="text-teal-900">{benefit.icon}</div>
-              <p className="text-gray-700 text-center">{benefit.text}</p>
-            </div>
-          ))}
+      {selectedPackage && (
+        <div className="mt-8 text-center text-lg text-teal-900">
+          ✅ <strong>{selectedPackage}</strong> selected! You can now proceed
+          with your membership.
         </div>
-      </div>
-
-      {/* Testimonials Section */}
-      <div className="mt-12 w-full max-w-6xl p-8 bg-white shadow-lg rounded-xl">
-        <h3 className="text-2xl font-semibold mb-6 text-teal-900">
-          What Our Members Say
-        </h3>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {[
-            {
-              name: "John Doe",
-              feedback:
-                "The Elite membership has completely transformed my shopping experience. Highly recommended!",
-            },
-            {
-              name: "Jane Smith",
-              feedback:
-                "I love the exclusive discounts and personalized offers. It's worth every penny!",
-            },
-          ].map((testimonial, index) => (
-            <div
-              key={index}
-              className="p-6 bg-gray-50 rounded-lg shadow-sm hover:shadow-md transition-shadow duration-300"
-            >
-              <p className="text-gray-700 italic">"{testimonial.feedback}"</p>
-              <p className="mt-4 text-teal-900 font-semibold">
-                - {testimonial.name}
-              </p>
-            </div>
-          ))}
-        </div>
-      </div>
+      )}
     </div>
   );
-}
+};
+
+export default PackageSelection;
