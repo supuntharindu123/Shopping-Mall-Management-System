@@ -197,7 +197,7 @@ export async function addMembershipPackage(req, res) {
 
     await membershipPackage.save();
     res.status(201).json({
-      message: "Membership package added successfully",
+      message: "Package added successfully",
       membershipPackage,
     });
   } catch (error) {

@@ -3,10 +3,12 @@ import React, { useState } from "react";
 const RegisterPage = () => {
   const [formData, setFormData] = useState({
     name: "",
-
     email: "",
     password: "",
   });
+
+  const [alert, setAlert] = useState({ type: "", message: "" });
+  const [showAlert, setShowAlert] = useState(false);
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -22,12 +24,30 @@ const RegisterPage = () => {
         },
         body: JSON.stringify(formData),
       });
+
       const data = await response.json();
-      alert(data.message || "Registration successful!");
+
+      if (response.ok) {
+        setAlert({
+          type: "success",
+          message: data.message || "Registration successful!",
+        });
+      } else {
+        setAlert({
+          type: "error",
+          message: data.message || "Registration failed.",
+        });
+      }
     } catch (error) {
       console.error("Error registering:", error);
-      alert("Registration failed. Please try again.");
+      setAlert({
+        type: "error",
+        message: "Registration failed. Please try again.",
+      });
     }
+
+    setShowAlert(true);
+    setTimeout(() => setShowAlert(false), 3000);
   };
 
   return (
@@ -36,6 +56,18 @@ const RegisterPage = () => {
         <h2 className="text-teal-900 text-2xl font-bold mb-6 text-center">
           Register
         </h2>
+
+        {/* Alert Box */}
+        {showAlert && (
+          <div
+            className={`p-3 rounded-lg mb-4 text-white text-center ${
+              alert.type === "success" ? "bg-green-600" : "bg-red-600"
+            }`}
+          >
+            {alert.message}
+          </div>
+        )}
+
         <form onSubmit={handleSubmit}>
           <input
             type="text"
