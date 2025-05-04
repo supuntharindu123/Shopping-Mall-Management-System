@@ -28,6 +28,8 @@ import FAQPage from "../component/pages/faq";
 import SecurityLostFound from "../component/pages/security";
 import RegisterPage from "../component/userprofile/register";
 import AdminDashboards from "../component/userprofile/useradmin";
+import Logout from "../component/userprofile/logout";
+import WrappedPurchaseForm from "../component/packges/purchasepackage";
 // import Dashboard from "../component/store/Dashboard";
 // import Products from "../component/store/Products";
 // import AddProduct from "../component/store/AddProduct";
@@ -47,10 +49,10 @@ function App() {
       path: "/contact",
       element: <ContactUs />,
     },
-    {
-      path: "/membership",
-      element: <AdminDashboard />,
-    },
+    // {
+    //   path: "/membership",
+    //   element: <AdminDashboard />,
+    // },
     {
       path: "/membershipdash",
       element: <Membershipdash />,
@@ -106,6 +108,14 @@ function App() {
     {
       path: "/admin",
       element: <AdminDashboards />,
+    },
+    {
+      path: "/logout",
+      element: <Logout />,
+    },
+    {
+      path: "/stripe",
+      element: <WrappedPurchaseForm />,
     },
 
     //parking

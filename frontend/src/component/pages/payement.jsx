@@ -4,14 +4,18 @@ import Mall from "../../assets/Mall01.jpg";
 import MallImg from "../../assets/Mall02.jpg";
 import MallImgs from "../../assets/Mall03.jpg";
 import Logo from "../../assets/CA01.jpg";
-import {
-  FiCheck,
-  FiAward,
-  FiShoppingBag,
-  FiStar,
-  FiCreditCard,
-} from "react-icons/fi";
+import { FiCheck, FiAward, FiShoppingBag } from "react-icons/fi";
 import axios from "axios";
+import { loadStripe } from "@stripe/stripe-js";
+import {
+  CardElement,
+  Elements,
+  useStripe,
+  useElements,
+} from "@stripe/react-stripe-js";
+import Swal from "sweetalert2";
+
+const stripePromise = loadStripe("your_publishable_key");
 
 const images = [Mall, MallImg, MallImgs];
 
@@ -193,17 +197,59 @@ const PackageSelection = ({ packages, onSelect }) => {
 };
 
 const PaymentForm = ({ package: pkg, onBack }) => {
-  const [paymentDetails, setPaymentDetails] = useState({
-    cardNumber: "",
-    expiryDate: "",
-    cvv: "",
-    nameOnCard: "",
-  });
+  const stripe = useStripe();
+  const elements = useElements();
+  const [isProcessing, setIsProcessing] = useState(false);
+  const [error, setError] = useState(null);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
+    setError(null);
+    setIsProcessing(true);
 
-    alert(`Success! You've subscribed to the ${pkg.name} package.`);
+    if (!stripe || !elements) {
+      setError("Payment processing not available");
+      setIsProcessing(false);
+      return;
+    }
+
+    try {
+      const { error, paymentMethod } = await stripe.createPaymentMethod({
+        type: "card",
+        card: elements.getElement(CardElement),
+      });
+
+      if (error) {
+        throw new Error(error.message);
+      }
+
+      const response = await axios.post(
+        "http://localhost:3001/api/purchasepackage",
+        {
+          userId: localStorage.getItem("userId"), // Get from your auth context
+          packageId: pkg._id,
+          paymentMethodId: paymentMethod.id,
+        }
+      );
+
+      if (response.data.message === "Package purchased successfully") {
+        Swal.fire({
+          icon: "success",
+          title: "Success!",
+          text: "Package purchased successfully",
+        });
+        // Redirect or update UI as needed
+      }
+    } catch (err) {
+      setError(err.message);
+      Swal.fire({
+        icon: "error",
+        title: "Payment Failed",
+        text: err.message,
+      });
+    } finally {
+      setIsProcessing(false);
+    }
   };
 
   return (
@@ -218,106 +264,39 @@ const PaymentForm = ({ package: pkg, onBack }) => {
           <div className="flex justify-between items-center mb-6">
             <div>
               <h4 className="font-bold text-lg text-teal-900">{pkg.name}</h4>
-              <p className="text-gray-600">${pkg.price}/month</p>
+              <p className="text-gray-600">${pkg.monthlyCost}/month</p>
             </div>
             <button
               onClick={onBack}
-              className="text-teal-900 hover:text-teal-700 font-medium flex items-center"
+              className="text-teal-900 hover:text-teal-700"
             >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                className="h-5 w-5 mr-1"
-                viewBox="0 0 20 20"
-                fill="currentColor"
-              >
-                <path
-                  fillRule="evenodd"
-                  d="M9.707 16.707a1 1 0 01-1.414 0l-6-6a1 1 0 010-1.414l6-6a1 1 0 011.414 1.414L5.414 9H17a1 1 0 110 2H5.414l4.293 4.293a1 1 0 010 1.414z"
-                  clipRule="evenodd"
-                />
-              </svg>
               Change Package
             </button>
           </div>
 
-          <form onSubmit={handleSubmit}>
-            <div className="space-y-4">
-              <div>
-                <label className="block text-gray-700 mb-1">Card Number</label>
-                <div className="relative">
-                  <FiCreditCard className="absolute left-3 top-3 text-gray-400" />
-                  <input
-                    type="text"
-                    placeholder="1234 5678 9012 3456"
-                    className="w-full pl-10 p-2 border rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-teal-500"
-                    value={paymentDetails.cardNumber}
-                    onChange={(e) =>
-                      setPaymentDetails({
-                        ...paymentDetails,
-                        cardNumber: e.target.value,
-                      })
-                    }
-                    required
-                  />
-                </div>
-              </div>
-
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-gray-700 mb-1">
-                    Expiry Date
-                  </label>
-                  <input
-                    type="text"
-                    placeholder="MM/YY"
-                    className="w-full p-2 border rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-teal-500"
-                    value={paymentDetails.expiryDate}
-                    onChange={(e) =>
-                      setPaymentDetails({
-                        ...paymentDetails,
-                        expiryDate: e.target.value,
-                      })
-                    }
-                    required
-                  />
-                </div>
-                <div>
-                  <label className="block text-gray-700 mb-1">CVV</label>
-                  <input
-                    type="text"
-                    placeholder="123"
-                    className="w-full p-2 border rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-teal-500"
-                    value={paymentDetails.cvv}
-                    onChange={(e) =>
-                      setPaymentDetails({
-                        ...paymentDetails,
-                        cvv: e.target.value,
-                      })
-                    }
-                    required
-                  />
-                </div>
-              </div>
-
-              <div>
-                <label className="block text-gray-700 mb-1">Name on Card</label>
-                <input
-                  type="text"
-                  placeholder="John Doe"
-                  className="w-full p-2 border rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-teal-500"
-                  value={paymentDetails.nameOnCard}
-                  onChange={(e) =>
-                    setPaymentDetails({
-                      ...paymentDetails,
-                      nameOnCard: e.target.value,
-                    })
-                  }
-                  required
-                />
-              </div>
+          <form onSubmit={handleSubmit} className="space-y-6">
+            <div className="p-4 border rounded-md">
+              <CardElement
+                options={{
+                  style: {
+                    base: {
+                      fontSize: "16px",
+                      color: "#424770",
+                      "::placeholder": {
+                        color: "#aab7c4",
+                      },
+                    },
+                    invalid: {
+                      color: "#9e2146",
+                    },
+                  },
+                }}
+              />
             </div>
 
-            <div className="mt-8 bg-gray-50 p-4 rounded-lg">
+            {error && <div className="text-red-500 text-sm">{error}</div>}
+
+            <div className="bg-gray-50 p-4 rounded-lg">
               <div className="flex justify-between items-center mb-2">
                 <span className="text-gray-600">Package Price:</span>
                 <span className="font-medium">${pkg.monthlyCost}/month</span>
@@ -330,10 +309,15 @@ const PaymentForm = ({ package: pkg, onBack }) => {
 
             <button
               type="submit"
-              className="w-full mt-6 bg-teal-900 hover:bg-teal-800 text-white py-3 rounded-lg font-medium transition-colors duration-300 flex items-center justify-center"
+              disabled={!stripe || isProcessing}
+              className={`w-full bg-teal-900 text-white py-3 rounded-lg font-medium
+                ${
+                  !stripe || isProcessing
+                    ? "opacity-50 cursor-not-allowed"
+                    : "hover:bg-teal-800"
+                }`}
             >
-              <FiAward className="mr-2" />
-              Complete Membership Enrollment
+              {isProcessing ? "Processing..." : "Complete Payment"}
             </button>
           </form>
         </div>
@@ -342,4 +326,10 @@ const PaymentForm = ({ package: pkg, onBack }) => {
   );
 };
 
-export default MembershipPage;
+export default function WrappedMembershipPage() {
+  return (
+    <Elements stripe={stripePromise}>
+      <MembershipPage />
+    </Elements>
+  );
+}

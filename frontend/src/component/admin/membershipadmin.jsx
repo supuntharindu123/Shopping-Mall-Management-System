@@ -205,7 +205,10 @@ const MembershipAdmin = () => {
           >
             Transaction
           </a>
-          <a className="bg-teal-800 hover:bg-teal-700 px-4 py-2 rounded">
+          <a
+            className="bg-teal-800 hover:bg-teal-700 px-4 py-2 rounded"
+            href="/logout"
+          >
             Logout
           </a>
         </div>
