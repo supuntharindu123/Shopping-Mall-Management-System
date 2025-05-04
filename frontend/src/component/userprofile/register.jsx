@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { redirect } from "react-router-dom";
 
 const RegisterPage = () => {
   const [formData, setFormData] = useState({

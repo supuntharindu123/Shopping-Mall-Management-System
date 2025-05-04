@@ -3,10 +3,6 @@ import Package from "../../models/Package.js";
 import Transaction from "../../models/Transaction.js";
 import Reward from "../../models/Reward.js";
 import purchasepackage from "../../models/purchasepackage.js";
-import Stripe from "stripe";
-const stripe = new Stripe(
-  process.env.STRIPE_SECRET_KEY || "your_stripe_secret_key"
-);
 
 export async function Purchasing(req, res) {
   try {
@@ -122,7 +118,7 @@ export async function removepkg(req, res) {
   try {
     const id = req.params.id;
     const packages = await Package.findByIdAndDelete(id);
-
+    console.log("packages", packages);
     res.status(200).json(packages);
   } catch (error) {
     console.error("Error in pkgDetails:", error);
@@ -132,7 +128,7 @@ export async function removepkg(req, res) {
 
 export async function purchasepackages(req, res) {
   try {
-    const { userId, packageId, paymentMethodId } = req.body;
+    const { userId, packageId } = req.body;
 
     // Validate user
     const user = await User.findById(userId);
@@ -145,54 +141,46 @@ export async function purchasepackages(req, res) {
       return res.status(404).json({ message: "Package not found" });
     }
 
-    // Create payment intent with Stripe
-    try {
-      const paymentIntent = await stripe.paymentIntents.create({
-        amount: packageData.monthlyCost * 100, // Stripe expects amount in cents
-        currency: "usd",
-        payment_method: paymentMethodId,
-        confirm: true,
-        description: `Package Purchase: ${packageData.name}`,
-        metadata: {
-          userId: userId,
-          packageId: packageId,
-          packageName: packageData.name,
-        },
-      });
+    // Check if user already has this package
+    const existingPackage = user.membershipPackage.find(
+      (pkg) =>
+        pkg.packagename === packageData.name &&
+        new Date(pkg.activatedate) >
+          new Date(Date.now() - 30 * 24 * 60 * 60 * 1000)
+    );
 
-      if (paymentIntent.status === "succeeded") {
-        // After successful payment, proceed with package assignment
-        user.membershipPackage.push({
-          packagename: packageData.name,
-          activatedate: new Date(),
-          paymentId: paymentIntent.id,
-        });
-
-        const purchaseRecord = new purchasepackage({
-          userId,
-          packageId,
-          packagename: packageData.name,
-          paymentId: paymentIntent.id,
-          amount: packageData.monthlyCost,
-        });
-
-        await purchaseRecord.save();
-        await user.save();
-
-        res.status(200).json({
-          message: "Package purchased successfully",
-          paymentId: paymentIntent.id,
-          user,
-          purchaseRecord,
-        });
-      }
-    } catch (stripeError) {
-      console.error("Stripe payment error:", stripeError);
+    if (existingPackage) {
       return res.status(400).json({
-        message: "Payment failed",
-        error: stripeError.message,
+        message: "Package already active!",
+        expiryDate: existingPackage.activatedate,
       });
     }
+
+    // Add new package
+    user.membershipPackage.push({
+      packagename: packageData.name,
+      activatedate: new Date(),
+      status: "active",
+    });
+
+    // Create purchase record
+    const purchaseRecord = new purchasepackage({
+      userId,
+      packageId,
+      packagename: packageData.name,
+      purchaseDate: new Date(),
+      status: "active",
+    });
+
+    await purchaseRecord.save();
+    await user.save();
+
+    res.status(200).json({
+      success: true,
+      message: "Package purchased successfully",
+      user,
+      purchaseRecord,
+    });
   } catch (error) {
     console.error("Error in purchasepackages:", error);
     res.status(500).json({ message: "Internal server error" });

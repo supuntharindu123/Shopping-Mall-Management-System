@@ -4,18 +4,9 @@ import Mall from "../../assets/Mall01.jpg";
 import MallImg from "../../assets/Mall02.jpg";
 import MallImgs from "../../assets/Mall03.jpg";
 import Logo from "../../assets/CA01.jpg";
-import { FiCheck, FiAward, FiShoppingBag } from "react-icons/fi";
+import { FiCheck, FiAward, FiShoppingBag, FiCreditCard } from "react-icons/fi";
 import axios from "axios";
-import { loadStripe } from "@stripe/stripe-js";
-import {
-  CardElement,
-  Elements,
-  useStripe,
-  useElements,
-} from "@stripe/react-stripe-js";
 import Swal from "sweetalert2";
-
-const stripePromise = loadStripe("your_publishable_key");
 
 const images = [Mall, MallImg, MallImgs];
 
@@ -197,55 +188,125 @@ const PackageSelection = ({ packages, onSelect }) => {
 };
 
 const PaymentForm = ({ package: pkg, onBack }) => {
-  const stripe = useStripe();
-  const elements = useElements();
+  const [paymentDetails, setPaymentDetails] = useState({
+    cardNumber: "",
+    expiryDate: "",
+    cvv: "",
+    nameOnCard: "",
+  });
+  const [errors, setErrors] = useState({});
   const [isProcessing, setIsProcessing] = useState(false);
-  const [error, setError] = useState(null);
+  const [user, setUser] = useState(null);
+
+  useEffect(() => {
+    const userData = JSON.parse(localStorage.getItem("user"));
+    setUser(userData);
+  }, []);
+
+  const validateCard = (number) => {
+    const cleaned = number.replace(/\s+/g, "");
+    return /^[0-9]{16}$/.test(cleaned);
+  };
+
+  const validateExpiry = (date) => {
+    if (!/^(0[1-9]|1[0-2])\/([0-9]{2})$/.test(date)) return false;
+    const [month, year] = date.split("/");
+    const expiry = new Date(2000 + parseInt(year), parseInt(month) - 1);
+    return expiry > new Date();
+  };
+
+  const validateCVV = (cvv) => {
+    return /^[0-9]{3,4}$/.test(cvv);
+  };
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    let formattedValue = value;
+
+    if (name === "cardNumber") {
+      formattedValue =
+        value
+          .replace(/\s/g, "")
+          .match(/.{1,4}/g)
+          ?.join(" ")
+          .substr(0, 19) || "";
+    }
+
+    if (name === "expiryDate") {
+      formattedValue = value
+        .replace(/\D/g, "")
+        .replace(/^([0-9]{2})/, "$1/")
+        .substr(0, 5);
+    }
+
+    setPaymentDetails((prev) => ({
+      ...prev,
+      [name]: formattedValue,
+    }));
+
+    setErrors((prev) => ({
+      ...prev,
+      [name]: "",
+    }));
+  };
+
+  const validateForm = () => {
+    const newErrors = {};
+
+    if (!validateCard(paymentDetails.cardNumber)) {
+      newErrors.cardNumber = "Invalid card number";
+    }
+    if (!validateExpiry(paymentDetails.expiryDate)) {
+      newErrors.expiryDate = "Invalid expiry date";
+    }
+    if (!validateCVV(paymentDetails.cvv)) {
+      newErrors.cvv = "Invalid CVV";
+    }
+    if (paymentDetails.nameOnCard.length < 3) {
+      newErrors.nameOnCard = "Please enter full name";
+    }
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError(null);
     setIsProcessing(true);
 
-    if (!stripe || !elements) {
-      setError("Payment processing not available");
+    if (!validateForm()) {
       setIsProcessing(false);
       return;
     }
 
     try {
-      const { error, paymentMethod } = await stripe.createPaymentMethod({
-        type: "card",
-        card: elements.getElement(CardElement),
-      });
-
-      if (error) {
-        throw new Error(error.message);
-      }
-
-      const response = await axios.post(
+      const res = await axios.post(
         "http://localhost:3001/api/purchasepackage",
         {
-          userId: localStorage.getItem("userId"), // Get from your auth context
           packageId: pkg._id,
-          paymentMethodId: paymentMethod.id,
+          userId: user.id,
+          paymentDetails: {
+            last4: paymentDetails.cardNumber.slice(-4),
+            cardType: "credit",
+            expiryDate: paymentDetails.expiryDate,
+          },
         }
       );
 
-      if (response.data.message === "Package purchased successfully") {
-        Swal.fire({
-          icon: "success",
-          title: "Success!",
-          text: "Package purchased successfully",
-        });
-        // Redirect or update UI as needed
-      }
+      Swal.fire({
+        icon: "success",
+        title: "Payment Successful!",
+        text: `You've subscribed to the ${pkg.name} package.`,
+        confirmButtonColor: "#115e59",
+      }).then(() => {
+        window.location.href = "/profile";
+      });
     } catch (err) {
-      setError(err.message);
       Swal.fire({
         icon: "error",
         title: "Payment Failed",
-        text: err.message,
+        text: err.response?.data?.message || "Please try again.",
+        confirmButtonColor: "#115e59",
       });
     } finally {
       setIsProcessing(false);
@@ -264,39 +325,117 @@ const PaymentForm = ({ package: pkg, onBack }) => {
           <div className="flex justify-between items-center mb-6">
             <div>
               <h4 className="font-bold text-lg text-teal-900">{pkg.name}</h4>
-              <p className="text-gray-600">${pkg.monthlyCost}/month</p>
+              <p className="text-gray-600">${pkg.price}/month</p>
             </div>
             <button
               onClick={onBack}
-              className="text-teal-900 hover:text-teal-700"
+              className="text-teal-900 hover:text-teal-700 font-medium flex items-center"
             >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                className="h-5 w-5 mr-1"
+                viewBox="0 0 20 20"
+                fill="currentColor"
+              >
+                <path
+                  fillRule="evenodd"
+                  d="M9.707 16.707a1 1 0 01-1.414 0l-6-6a1 1 0 010-1.414l6-6a1 1 0 011.414 1.414L5.414 9H17a1 1 0 110 2H5.414l4.293 4.293a1 1 0 010 1.414z"
+                  clipRule="evenodd"
+                />
+              </svg>
               Change Package
             </button>
           </div>
 
-          <form onSubmit={handleSubmit} className="space-y-6">
-            <div className="p-4 border rounded-md">
-              <CardElement
-                options={{
-                  style: {
-                    base: {
-                      fontSize: "16px",
-                      color: "#424770",
-                      "::placeholder": {
-                        color: "#aab7c4",
-                      },
-                    },
-                    invalid: {
-                      color: "#9e2146",
-                    },
-                  },
-                }}
-              />
+          <form onSubmit={handleSubmit}>
+            <div className="space-y-4">
+              <div>
+                <label className="block text-gray-700 mb-1">Card Number</label>
+                <div className="relative">
+                  <FiCreditCard className="absolute left-3 top-3 text-gray-400" />
+                  <input
+                    type="text"
+                    name="cardNumber"
+                    placeholder="1234 5678 9012 3456"
+                    className={`w-full pl-10 p-2 border rounded-lg focus:ring-2 focus:ring-teal-500 ${
+                      errors.cardNumber ? "border-red-500" : "border-gray-300"
+                    }`}
+                    value={paymentDetails.cardNumber}
+                    onChange={handleInputChange}
+                    maxLength="19"
+                    required
+                  />
+                  {errors.cardNumber && (
+                    <p className="text-red-500 text-sm mt-1">
+                      {errors.cardNumber}
+                    </p>
+                  )}
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-gray-700 mb-1">
+                    Expiry Date
+                  </label>
+                  <input
+                    type="text"
+                    name="expiryDate"
+                    placeholder="MM/YY"
+                    className={`w-full p-2 border rounded-lg focus:ring-2 focus:ring-teal-500 ${
+                      errors.expiryDate ? "border-red-500" : "border-gray-300"
+                    }`}
+                    value={paymentDetails.expiryDate}
+                    onChange={handleInputChange}
+                    required
+                  />
+                  {errors.expiryDate && (
+                    <p className="text-red-500 text-sm mt-1">
+                      {errors.expiryDate}
+                    </p>
+                  )}
+                </div>
+                <div>
+                  <label className="block text-gray-700 mb-1">CVV</label>
+                  <input
+                    type="text"
+                    name="cvv"
+                    placeholder="123"
+                    className={`w-full p-2 border rounded-lg focus:ring-2 focus:ring-teal-500 ${
+                      errors.cvv ? "border-red-500" : "border-gray-300"
+                    }`}
+                    value={paymentDetails.cvv}
+                    onChange={handleInputChange}
+                    required
+                  />
+                  {errors.cvv && (
+                    <p className="text-red-500 text-sm mt-1">{errors.cvv}</p>
+                  )}
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-gray-700 mb-1">Name on Card</label>
+                <input
+                  type="text"
+                  name="nameOnCard"
+                  placeholder="John Doe"
+                  className={`w-full p-2 border rounded-lg focus:ring-2 focus:ring-teal-500 ${
+                    errors.nameOnCard ? "border-red-500" : "border-gray-300"
+                  }`}
+                  value={paymentDetails.nameOnCard}
+                  onChange={handleInputChange}
+                  required
+                />
+                {errors.nameOnCard && (
+                  <p className="text-red-500 text-sm mt-1">
+                    {errors.nameOnCard}
+                  </p>
+                )}
+              </div>
             </div>
 
-            {error && <div className="text-red-500 text-sm">{error}</div>}
-
-            <div className="bg-gray-50 p-4 rounded-lg">
+            <div className="mt-8 bg-gray-50 p-4 rounded-lg">
               <div className="flex justify-between items-center mb-2">
                 <span className="text-gray-600">Package Price:</span>
                 <span className="font-medium">${pkg.monthlyCost}/month</span>
@@ -309,15 +448,13 @@ const PaymentForm = ({ package: pkg, onBack }) => {
 
             <button
               type="submit"
-              disabled={!stripe || isProcessing}
-              className={`w-full bg-teal-900 text-white py-3 rounded-lg font-medium
-                ${
-                  !stripe || isProcessing
-                    ? "opacity-50 cursor-not-allowed"
-                    : "hover:bg-teal-800"
-                }`}
+              className="w-full mt-6 bg-teal-900 hover:bg-teal-800 text-white py-3 rounded-lg font-medium transition-colors duration-300 flex items-center justify-center"
+              disabled={isProcessing}
             >
-              {isProcessing ? "Processing..." : "Complete Payment"}
+              <FiAward className="mr-2" />
+              {isProcessing
+                ? "Processing..."
+                : "Complete Membership Enrollment"}
             </button>
           </form>
         </div>
@@ -326,10 +463,4 @@ const PaymentForm = ({ package: pkg, onBack }) => {
   );
 };
 
-export default function WrappedMembershipPage() {
-  return (
-    <Elements stripe={stripePromise}>
-      <MembershipPage />
-    </Elements>
-  );
-}
+export default MembershipPage;

@@ -43,7 +43,7 @@ function Navbar() {
             <li>
               <a
                 href="/"
-                className="text-white hover:text-gray-400 font-bold text-2xl"
+                className="flex items-center space-x-2 text-white hover:text-gray-400 px-4  rounded-lg text-2xl font-bold transition"
               >
                 Home
               </a>
@@ -51,7 +51,7 @@ function Navbar() {
             <li>
               <a
                 href="#stores"
-                className="text-white hover:text-gray-400 font-bold text-2xl"
+                className="flex items-center space-x-2 text-white hover:text-gray-400 px-4  rounded-lg text-2xl font-bold transition"
               >
                 Stores
               </a>
@@ -59,46 +59,41 @@ function Navbar() {
             <li className="relative">
               <button
                 onClick={toggleServicesDropdown}
-                className="text-white hover:text-gray-400 flex items-center focus:outline-none"
+                className="flex items-center space-x-2 text-white hover:text-gray-400 px-4  rounded-lg text-2xl font-bold transition"
               >
-                <span className="font-bold text-2xl">Services</span>
+                Services
                 <FaChevronDown size={14} className="ml-1" />
               </button>
               {isServicesOpen && (
-                <div className="absolute top-full left-0 mt-5 w-48 bg-white shadow-lg">
-                  <ul className="">
-                    <li>
-                      <a
-                        href="/parkingHome"
-                        className="block px-4 py-2 text-gray-800 hover:bg-gray-500 hover:text-white"
-                      >
-                        Parking Services
-                      </a>
-                    </li>
-                    <li>
-                      <a
-                        href="/Faq"
-                        className="block px-4 py-2 text-gray-800 hover:bg-gray-500 hover:text-white"
-                      >
-                        Help
-                      </a>
-                    </li>
-                    <li>
-                      <a
-                        href="/security"
-                        className="block px-4 py-2 text-gray-800 hover:bg-gray-500 hover:text-white"
-                      >
-                        Security
-                      </a>
-                    </li>
-                  </ul>
+                <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-xl z-50">
+                  <a
+                    href="/parkingHome"
+                    className="block px-4 py-2 text-gray-800 hover:bg-gray-100  items-center"
+                  >
+                    <i className="fas fa-parking mr-2"></i>
+                    Parking Services
+                  </a>
+                  <a
+                    href="/security"
+                    className="block px-4 py-2 text-gray-800 hover:bg-gray-100  items-center"
+                  >
+                    <i className="fas fa-shield-alt mr-2"></i>
+                    Security
+                  </a>
+                  <a
+                    href="/Faq"
+                    className="block px-4 py-2 text-gray-800 hover:bg-gray-100  items-center"
+                  >
+                    <i className="fas fa-question-circle mr-2"></i>
+                    Help & FAQ
+                  </a>
                 </div>
               )}
             </li>
             <li>
               <a
                 href="/contact"
-                className="text-white hover:text-gray-500 hover:scale-105 font-bold text-2xl"
+                className="flex items-center space-x-2 text-white hover:text-gray-400 px-4  rounded-lg text-2xl font-bold transition"
               >
                 Contact
               </a>
