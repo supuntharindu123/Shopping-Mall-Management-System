@@ -60,7 +60,7 @@ function App() {
       element: <MembershipAdmin />,
     },
     {
-      path: "/payment",
+      path: "/membershippage",
       element: <PaymentPage />,
     },
     {
@@ -72,7 +72,7 @@ function App() {
       element: <MembershipPackages />,
     },
     {
-      path: "/updatepackage",
+      path: "/updatepackage/:id",
       element: <UpdateMembershipPackage />,
     },
     {

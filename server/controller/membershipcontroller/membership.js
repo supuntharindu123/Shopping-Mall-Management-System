@@ -104,9 +104,22 @@ export async function removeTransaction(req, res) {
 
 export async function pkgDetails(req, res) {
   try {
-    const pkgname = req.params.pkgname;
-    const packages = await Package.findOne(pkgname);
-    res.json(packages);
+    const id = req.params.id;
+    const packages = await Package.findById(id);
+    console.log("packages", packages);
+    res.status(200).json(packages);
+  } catch (error) {
+    console.error("Error in pkgDetails:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+}
+
+export async function removepkg(req, res) {
+  try {
+    const id = req.params.id;
+    const packages = await Package.findByIdAndDelete(id);
+
+    res.status(200).json(packages);
   } catch (error) {
     console.error("Error in pkgDetails:", error);
     res.status(500).json({ message: "Internal server error" });
@@ -155,6 +168,41 @@ export async function purchasepackages(req, res) {
     res.status(500).json({ message: "Internal server error" });
   }
 }
+
+export async function getUserMembershipPackage(req, res) {
+  try {
+    const pkg = await Package.find();
+    if (!pkg) {
+      return res.status(404).json({ message: "Packages not found" });
+    }
+    res.status(200).json(pkg);
+  } catch (error) {
+    console.error("Error in getUserMembershipPackage:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+}
+
+export const updatePackage = async (req, res) => {
+  const { id } = req.params;
+  const updatedData = req.body;
+
+  try {
+    const updatedPackage = await Package.findByIdAndUpdate(id, updatedData, {
+      new: true,
+      runValidators: true,
+    });
+
+    if (!updatedPackage) {
+      return res.status(404).json({ message: "Package not found" });
+    }
+
+    res.status(200).json(updatedPackage);
+  } catch (error) {
+    console.error("Error updating package:", error);
+    res.status(500).json({ message: "Server error", error: error.message });
+  }
+};
+
 export async function Rewards(req, res) {
   const { userId, rewardId } = req.body;
   const user = await User.findById(userId);

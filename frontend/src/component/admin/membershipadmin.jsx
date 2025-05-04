@@ -12,27 +12,10 @@ import {
   Plus,
   Edit,
 } from "lucide-react";
+import axios from "axios";
+import Swal from "sweetalert2";
 
 const MembershipAdmin = () => {
-  const packages = [
-    {
-      name: "Basic Plan",
-      monthlyCost: 10,
-      benefits: ["Access to basic features", "Limited support"],
-      pointsPerDollar: 1,
-      description: "Ideal for individuals starting out.",
-      category: "Standard",
-    },
-    {
-      name: "Premium Plan",
-      monthlyCost: 25,
-      benefits: ["Priority support", "Exclusive content"],
-      pointsPerDollar: 2,
-      description: "For users who want premium perks.",
-      category: "Premium",
-    },
-  ];
-
   const rewards = [
     {
       name: "Free Coffee",
@@ -54,7 +37,7 @@ const MembershipAdmin = () => {
   const [transactionsection, setTransactionSection] = useState(true);
   const [packagesection, setPackagesection] = useState(false);
   const [rewardsection, setRewardSection] = useState(false);
-  const [packageList, setPackageList] = useState(packages);
+  const [packageList, setPackageList] = useState([]);
   const [rewardList, setRewardList] = useState(rewards);
 
   useEffect(() => {
@@ -86,7 +69,17 @@ const MembershipAdmin = () => {
       }
     };
 
+    const pkg = async () => {
+      try {
+        const res = await axios.get("http://localhost:3001/api/packages");
+        setPackageList(res.data);
+      } catch (error) {
+        console.error("Error fetching packages:", error);
+      }
+    };
+
     fetchTransactions();
+    pkg();
   }, []);
 
   const deleteTransaction = async (id) => {
@@ -129,6 +122,35 @@ const MembershipAdmin = () => {
       console.error("Error deleting transactions:", error);
     }
   };
+
+  const removepkg = async (id) => {
+    try {
+      const result = await Swal.fire({
+        title: "Are you sure?",
+        text: "You won't be able to revert this!",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#115e59",
+        cancelButtonColor: "#d33",
+        confirmButtonText: "Yes, delete it!",
+      });
+
+      if (result.isConfirmed) {
+        const res = await axios.delete(
+          `http://localhost:3001/api/packages/${id}`
+        );
+        if (res.status === 200) {
+          Swal.fire("Deleted!", "Package has been deleted.", "success");
+          // Refresh package list
+          setPackageList(packageList.filter((pkg) => pkg._id !== id));
+        }
+      }
+    } catch (error) {
+      Swal.fire("Error!", "Failed to delete package.", "error");
+      console.error("Error deleting package:", error);
+    }
+  };
+
   const toggleExpandTransaction = (id) => {
     setExpandedTransaction(expandedTransaction === id ? null : id);
   };
@@ -290,10 +312,8 @@ const MembershipAdmin = () => {
             </div>
           ))}
         </div>
-        {/* Transactions Table */}
         {transactionsection && (
           <div className="bg-white rounded-xl shadow-md overflow-hidden">
-            {/* Add Transaction Button */}
             <div className="border-b border-gray-100">
               <Link
                 to={"/addtransaction"}
@@ -519,14 +539,17 @@ const MembershipAdmin = () => {
                   </ul>
                   <div className="flex justify-end gap-2 mt-4">
                     <a
-                      href="updatepackage"
+                      href={`/updatepackage/${pkg._id}`}
                       className="text-gray-600 hover:text-teal-900"
                     >
                       <Edit size={18} />
                     </a>
-                    <a className="text-red-600 hover:text-red-800">
+                    <button
+                      className="text-red-600 hover:text-red-800"
+                      onClick={() => removepkg(pkg._id)}
+                    >
                       <Trash2 size={18} />
-                    </a>
+                    </button>
                   </div>
                 </div>
               ))}

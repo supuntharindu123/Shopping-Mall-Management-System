@@ -11,81 +11,27 @@ import {
   FiStar,
   FiCreditCard,
 } from "react-icons/fi";
+import axios from "axios";
 
 const images = [Mall, MallImg, MallImgs];
 
-const membershipPackages = [
-  {
-    id: 1,
-    name: "Foodie Delight",
-    price: 10,
-    category: "Food",
-    benefits: [
-      "10% off all food and beverage purchases",
-      "Free drink or dessert with every $50 spent",
-      "Exclusive access to food tastings",
-      "Complimentary meal after 10 visits",
-    ],
-    pointsRate: 1, // points per $1 spent
-  },
-  {
-    id: 2,
-    name: "Fashionista",
-    price: 15,
-    category: "Fashion",
-    benefits: [
-      "15% off all fashion purchases",
-      "Early access to seasonal sales",
-      "Free personal styling session",
-      "Buy 3, Get 1 Free on selected items",
-    ],
-    pointsRate: 2,
-  },
-  {
-    id: 3,
-    name: "Entertainment Enthusiast",
-    price: 12,
-    category: "Entertainment",
-    benefits: [
-      "20% off movie tickets and arcade tokens",
-      "Free popcorn and drink with every movie",
-      "Exclusive access to VIP premieres",
-      "Buy 4 tickets, get 5th free",
-    ],
-    pointsRate: 1,
-  },
-  {
-    id: 4,
-    name: "Lifestyle Pro",
-    price: 10,
-    category: "Lifestyle",
-    benefits: [
-      "10% off lifestyle essentials",
-      "Free grocery delivery for orders above $50",
-      "Discounted wellness packages",
-      "Buy 1, Get 1 Free on wellness products",
-    ],
-    pointsRate: 1,
-  },
-  {
-    id: 5,
-    name: "Mall Explorer Premium",
-    price: 25,
-    category: "All",
-    benefits: [
-      "10% off all purchases",
-      "Free VIP parking for a month",
-      "Exclusive access to all events",
-      "Complimentary meal, movie, and spa quarterly",
-    ],
-    pointsRate: 2,
-  },
-];
-
 const MembershipPage = () => {
+  const [packages, setPackages] = useState([]);
   const [selectedPackage, setSelectedPackage] = useState(null);
-  const [currentStep, setCurrentStep] = useState(1); // 1: Select package, 2: Payment
+  const [currentStep, setCurrentStep] = useState(1);
   const [index, setIndex] = useState(0);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const pkg = await axios.get("http://localhost:3001/api/packages");
+        setPackages(pkg.data);
+      } catch (error) {
+        console.error("Error fetching packages:", error);
+      }
+    };
+    fetchData();
+  }, []);
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -181,7 +127,7 @@ const MembershipPage = () => {
 
         {currentStep === 1 && (
           <PackageSelection
-            packages={membershipPackages}
+            packages={packages}
             onSelect={handlePackageSelect}
           />
         )}
@@ -219,7 +165,7 @@ const PackageSelection = ({ packages, onSelect }) => {
                   {pkg.category === "All" ? "All Categories" : pkg.category}
                 </span>
                 <span className="ml-2 inline-block bg-yellow-100 text-yellow-900 px-2 py-1 rounded-full text-xs font-semibold">
-                  {pkg.pointsRate}x Points
+                  {pkg.pointsPerDollar} Points
                 </span>
               </div>
               <ul className="space-y-2 mb-6">
@@ -230,6 +176,7 @@ const PackageSelection = ({ packages, onSelect }) => {
                   </li>
                 ))}
               </ul>
+              <div className=" p-3 text-sm pt-0">{pkg.description}</div>
               <button
                 onClick={() => onSelect(pkg)}
                 className="w-full bg-teal-900 hover:bg-teal-800 text-white py-2 rounded-lg transition-colors duration-300 flex items-center justify-center"
@@ -255,6 +202,7 @@ const PaymentForm = ({ package: pkg, onBack }) => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
+
     alert(`Success! You've subscribed to the ${pkg.name} package.`);
   };
 
@@ -372,11 +320,11 @@ const PaymentForm = ({ package: pkg, onBack }) => {
             <div className="mt-8 bg-gray-50 p-4 rounded-lg">
               <div className="flex justify-between items-center mb-2">
                 <span className="text-gray-600">Package Price:</span>
-                <span className="font-medium">${pkg.price}/month</span>
+                <span className="font-medium">${pkg.monthlyCost}/month</span>
               </div>
               <div className="flex justify-between items-center font-bold text-lg text-teal-900">
                 <span>Total Due Today:</span>
-                <span>${pkg.price}</span>
+                <span>${pkg.monthlyCost}</span>
               </div>
             </div>
 
@@ -389,21 +337,6 @@ const PaymentForm = ({ package: pkg, onBack }) => {
             </button>
           </form>
         </div>
-      </div>
-
-      <div className="mt-8 bg-teal-50 border border-teal-100 rounded-lg p-6">
-        <h4 className="font-bold text-teal-900 mb-3 flex items-center">
-          <FiStar className="mr-2" />
-          Membership Benefits
-        </h4>
-        <ul className="space-y-2">
-          {pkg.benefits.map((benefit, index) => (
-            <li key={index} className="flex items-start">
-              <FiCheck className="text-teal-900 mt-1 mr-2 flex-shrink-0" />
-              <span>{benefit}</span>
-            </li>
-          ))}
-        </ul>
       </div>
     </div>
   );

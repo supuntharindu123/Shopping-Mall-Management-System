@@ -1,58 +1,109 @@
 import React, { useState } from "react";
 import axios from "axios";
 import Swal from "sweetalert2";
+import { redirect } from "react-router-dom";
+
+const initialState = {
+  name: "",
+  monthlyCost: "",
+  pointsPerDollar: "",
+  benefits: "",
+  description: "",
+  category: "",
+};
+
+const InputField = ({ label, name, value, onChange, type = "text" }) => (
+  <div>
+    <label className="block mb-1 font-medium text-gray-700">{label}</label>
+    <input
+      type={type}
+      name={name}
+      value={value}
+      onChange={onChange}
+      className="w-full p-2 border rounded-lg"
+      required
+    />
+  </div>
+);
+
+const TextAreaField = ({ label, name, value, onChange }) => (
+  <div>
+    <label className="block mb-1 font-medium text-gray-700">{label}</label>
+    <textarea
+      name={name}
+      value={value}
+      onChange={onChange}
+      className="w-full p-2 border rounded-lg"
+      rows={3}
+      required
+    />
+  </div>
+);
 
 function AddPackageForm() {
-  const [formData, setFormData] = useState({
-    name: "",
-    monthlyCost: "",
-    pointsPerDollar: "",
-    benefits: "",
-    description: "",
-    category: "",
-  });
+  const [formData, setFormData] = useState(initialState);
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
+  const validateForm = () => {
+    const requiredFields = [
+      "name",
+      "monthlyCost",
+      "pointsPerDollar",
+      "benefits",
+      "description",
+      "category",
+    ];
+    const emptyFields = requiredFields.filter((key) => !formData[key]);
+
+    if (emptyFields.length > 0) {
+      throw new Error(`Please fill in: ${emptyFields.join(", ")}`);
+    }
+
+    if (isNaN(formData.monthlyCost) || formData.monthlyCost <= 0) {
+      throw new Error("Monthly Cost must be a positive number");
+    }
+
+    if (isNaN(formData.pointsPerDollar) || formData.pointsPerDollar <= 0) {
+      throw new Error("Points Per Dollar must be a positive number");
+    }
+  };
+
+  const buildPayload = () => ({
+    ...formData,
+    monthlyCost: parseFloat(formData.monthlyCost),
+    pointsPerDollar: parseFloat(formData.pointsPerDollar),
+    benefits: formData.benefits
+      .split(",")
+      .map((b) => b.trim())
+      .filter(Boolean),
+  });
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
     try {
-      const payload = {
-        ...formData,
-        monthlyCost: parseFloat(formData.monthlyCost),
-        pointsPerDollar: parseFloat(formData.pointsPerDollar),
-        benefits: formData.benefits.split(",").map((b) => b.trim()),
-      };
+      validateForm();
+      const payload = buildPayload();
 
-      const res = await axios.post("http://localhost:3001/api/addpkg", payload);
+      const res = await axios.post(
+        "http://localhost:3001/api/addpkg",
+        payload,
+        {
+          headers: { "Content-Type": "application/json" },
+        }
+      );
 
-      Swal.fire({
-        icon: "success",
-        title: "Package added successfully!",
-        text: res.data.message || "The package has been added.",
-        confirmButtonColor: "#3085d6",
-      });
-
-      // Clear form
-      setFormData({
-        name: "",
-        monthlyCost: "",
-        pointsPerDollar: "",
-        benefits: "",
-        description: "",
-        category: "",
-      });
+      Swal.fire({ icon: "success", title: "Success!", text: res.data.message });
+      setFormData(initialState);
+      redirect("/membershipadmin");
     } catch (error) {
       Swal.fire({
         icon: "error",
         title: "Error",
-        text:
-          error.response?.data?.error ||
-          "An error occurred while adding the package.",
-        confirmButtonColor: "#d33",
+        text: error.response?.data?.message || error.message,
       });
     }
   };
@@ -64,43 +115,38 @@ function AddPackageForm() {
           Add Membership Package
         </h2>
         <form className="space-y-4" onSubmit={handleSubmit}>
-          {[
-            "name",
-            "monthlyCost",
-            "pointsPerDollar",
-            "benefits",
-            "description",
-          ].map((field) => (
-            <div key={field}>
-              <label className="block mb-1 font-medium capitalize text-gray-700">
-                {field.replace(/([A-Z])/g, " $1")}
-              </label>
-              {field === "benefits" || field === "description" ? (
-                <textarea
-                  name={field}
-                  value={formData[field]}
-                  onChange={handleChange}
-                  className="w-full p-2 border rounded-lg"
-                  rows={3}
-                  required
-                />
-              ) : (
-                <input
-                  type={
-                    field.includes("Cost") || field.includes("Points")
-                      ? "number"
-                      : "text"
-                  }
-                  name={field}
-                  value={formData[field]}
-                  onChange={handleChange}
-                  className="w-full p-2 border rounded-lg"
-                  required
-                />
-              )}
-            </div>
-          ))}
-
+          <InputField
+            label="Name"
+            name="name"
+            value={formData.name}
+            onChange={handleChange}
+          />
+          <InputField
+            label="Monthly Cost"
+            name="monthlyCost"
+            value={formData.monthlyCost}
+            onChange={handleChange}
+            type="number"
+          />
+          <InputField
+            label="Points Per Dollar"
+            name="pointsPerDollar"
+            value={formData.pointsPerDollar}
+            onChange={handleChange}
+            type="number"
+          />
+          <TextAreaField
+            label="Benefits (comma-separated)"
+            name="benefits"
+            value={formData.benefits}
+            onChange={handleChange}
+          />
+          <TextAreaField
+            label="Description"
+            name="description"
+            value={formData.description}
+            onChange={handleChange}
+          />
           <div>
             <label className="block mb-1 font-medium text-gray-700">
               Category
@@ -120,7 +166,6 @@ function AddPackageForm() {
               <option value="all">All</option>
             </select>
           </div>
-
           <button
             type="submit"
             className="w-full bg-teal-800 text-white py-3 rounded-lg hover:bg-teal-700 transition"

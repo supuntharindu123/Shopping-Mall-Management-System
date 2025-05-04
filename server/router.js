@@ -15,6 +15,9 @@ import {
   transactionsdetails,
   pkgDetails,
   removeTransaction,
+  getUserMembershipPackage,
+  updatePackage,
+  removepkg,
 } from "./controller/membershipcontroller/membership.js";
 import {
   CreateParking,
@@ -60,8 +63,11 @@ router.post("/addrewards", addReward);
 router.post("/purchasepackage", purchasepackages);
 router.get("/transactions", transactionsdetails);
 router.get("/details/:username", GetUserDetails);
-router.get("/pkgdetails/:pkgname", pkgDetails);
+router.get("/pkgdetails/:id", pkgDetails);
 router.delete("/removetransaction/:transactionId", removeTransaction);
+router.get("/packages", getUserMembershipPackage);
+router.put("/packages/:id", updatePackage);
+router.delete("/packages/:id", removepkg);
 
 //parking
 router.post("/parking", CreateParking);
