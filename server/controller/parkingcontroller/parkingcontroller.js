@@ -1,5 +1,9 @@
 import Parking from "../../models/parking.js";
 import Booking from "../../models/booking.js";
+import fs from "fs";
+import path from "path";
+
+import ParkingCategory from "../../models/ParkingCategory.js";
 
 // Add new function to check availability
 export async function checkAvailability(req, res) {
@@ -134,6 +138,101 @@ export async function getAllParking(req, res) {
     res.status(200).json(parkingList);
   } catch (error) {
     res.status(500).json({ message: "Error fetching parking data", error });
+  }
+}
+
+export async function addParkingCategory(req, res) {
+  try {
+    const { name, hourlyRate, totalSpots, description, securityFeatures } =
+      req.body;
+
+    const newCategory = new ParkingCategory({
+      name,
+      hourlyRate,
+      totalSpots,
+      description,
+      securityFeatures,
+      image: req.file ? `http://localhost:3001/${req.file.path}` : null,
+    });
+
+    await newCategory.save();
+    res.status(201).json(newCategory);
+  } catch (err) {
+    res.status(400).json({ message: err.message });
+  }
+}
+
+export async function getallcategory(req, res) {
+  try {
+    const categories = await ParkingCategory.find();
+    res.json(categories);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+}
+
+export async function updatecategory(req, res) {
+  try {
+    const { name, hourlyRate, totalSpots, description, securityFeatures } =
+      req.body;
+    const updateData = {
+      name,
+      hourlyRate,
+      totalSpots,
+      description,
+      securityFeatures,
+    };
+
+    if (req.file) {
+      updateData.image = `http://localhost:3001/${req.file.path}`;
+    }
+
+    const updatedCategory = await ParkingCategory.findByIdAndUpdate(
+      req.params.id,
+      updateData,
+      { new: true }
+    );
+
+    res.json(updatedCategory);
+  } catch (err) {
+    res.status(400).json({ message: err.message });
+  }
+}
+
+export async function deletecategory(req, res) {
+  try {
+    const category = await ParkingCategory.findById(req.params.id);
+
+    if (!category) {
+      return res.status(404).json({ message: "Category not found" });
+    }
+
+    // Delete image file if it exists
+    if (category.image) {
+      try {
+        const imageUrl = new URL(category.image);
+        const relativePath = decodeURIComponent(imageUrl.pathname);
+        const absolutePath = path.join(process.cwd(), relativePath);
+
+        // Check if file exists before attempting to delete
+        if (fs.existsSync(absolutePath)) {
+          fs.unlinkSync(absolutePath);
+          console.log("Image deleted successfully:", absolutePath);
+        }
+      } catch (err) {
+        console.error("Error deleting image:", err);
+      }
+    }
+
+    // Delete the category from database
+    await ParkingCategory.findByIdAndDelete(req.params.id);
+
+    res
+      .status(200)
+      .json({ message: "Category and image deleted successfully" });
+  } catch (error) {
+    console.error("Error deleting category:", error);
+    res.status(500).json({ message: "Internal server error" });
   }
 }
 

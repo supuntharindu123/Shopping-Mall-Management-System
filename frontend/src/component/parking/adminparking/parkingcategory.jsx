@@ -10,6 +10,8 @@ const ParkingCategory = () => {
     hourlyRate: "",
     totalSpots: "",
     description: "",
+    securityFeatures: "",
+    image: null,
   });
   const [isEditing, setIsEditing] = useState(false);
   const [editId, setEditId] = useState(null);
@@ -21,7 +23,7 @@ const ParkingCategory = () => {
   const fetchCategories = async () => {
     try {
       const response = await axios.get(
-        "http://localhost:3001/api/parking-categories"
+        "http://localhost:3001/api/parkingcategory"
       );
       setCategories(response.data);
     } catch (error) {
@@ -32,16 +34,36 @@ const ParkingCategory = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
+      const formData = new FormData();
+      formData.append("name", newCategory.name);
+      formData.append("hourlyRate", newCategory.hourlyRate);
+      formData.append("totalSpots", newCategory.totalSpots);
+      formData.append("description", newCategory.description);
+      formData.append("securityFeatures", newCategory.securityFeatures);
+      if (newCategory.image) {
+        formData.append("image", newCategory.image);
+      }
+
       if (isEditing) {
         await axios.put(
-          `http://localhost:3001/api/parking-categories/${editId}`,
-          newCategory
+          `http://localhost:3001/api/parkingcategory/${editId}`,
+          formData,
+          {
+            headers: {
+              "Content-Type": "multipart/form-data",
+            },
+          }
         );
         Swal.fire("Success", "Category updated successfully", "success");
       } else {
         await axios.post(
-          "http://localhost:3001/api/parking-categories",
-          newCategory
+          "http://localhost:3001/api/parkingcategory",
+          formData,
+          {
+            headers: {
+              "Content-Type": "multipart/form-data",
+            },
+          }
         );
         Swal.fire("Success", "Category added successfully", "success");
       }
@@ -50,6 +72,8 @@ const ParkingCategory = () => {
         hourlyRate: "",
         totalSpots: "",
         description: "",
+        securityFeatures: "",
+        image: null,
       });
       setIsEditing(false);
       setEditId(null);
@@ -76,9 +100,7 @@ const ParkingCategory = () => {
       });
 
       if (result.isConfirmed) {
-        await axios.delete(
-          `http://localhost:3001/api/parking-categories/${id}`
-        );
+        await axios.delete(`http://localhost:3001/api/parkingcategory/${id}`);
         Swal.fire("Deleted!", "Category has been deleted.", "success");
         fetchCategories();
       }
@@ -207,6 +229,45 @@ const ParkingCategory = () => {
                   rows="3"
                 />
               </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700">
+                  Security Features
+                </label>
+                <textarea
+                  value={newCategory.securityFeatures}
+                  onChange={(e) =>
+                    setNewCategory({
+                      ...newCategory,
+                      securityFeatures: e.target.value,
+                    })
+                  }
+                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-teal-500 focus:ring-teal-500"
+                  placeholder="CCTV, Security Guards, Access Control, etc."
+                  rows="2"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700">
+                  Parking Area Image
+                </label>
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={(e) =>
+                    setNewCategory({
+                      ...newCategory,
+                      image: e.target.files[0],
+                    })
+                  }
+                  className="mt-1 block w-full text-sm text-gray-500
+                    file:mr-4 file:py-2 file:px-4
+                    file:rounded-md file:border-0
+                    file:text-sm file:font-semibold
+                    file:bg-teal-50 file:text-teal-700
+                    hover:file:bg-teal-100"
+                />
+              </div>
               <button
                 type="submit"
                 className="w-full bg-teal-900 text-white py-2 px-4 rounded-md hover:bg-teal-800 transition-colors"
@@ -217,7 +278,7 @@ const ParkingCategory = () => {
           </div>
 
           {/* Categories List */}
-          <div className="bg-white p-6 rounded-lg shadow-lg">
+          <div className="bg-white p-6 rounded-lg shadow-lg overflow-auto max-h-[800px]">
             <h2 className="text-xl font-semibold mb-4 text-teal-900">
               Existing Categories
             </h2>
@@ -225,41 +286,78 @@ const ParkingCategory = () => {
               {categories.map((category) => (
                 <div
                   key={category._id}
-                  className="border p-4 rounded-lg hover:bg-gray-50"
+                  className="border border-gray-200 p-4 rounded-lg hover:bg-gray-50 transition-colors"
                 >
-                  <div className="flex justify-between items-start">
-                    <div>
-                      <h3 className="font-semibold text-lg">{category.name}</h3>
-                      <p className="text-sm text-gray-600">
-                        {category.description}
-                      </p>
-                      <div className="mt-2 space-x-4">
-                        <span className="text-sm text-teal-900">
-                          ${category.hourlyRate}/hour
-                        </span>
-                        <span className="text-sm text-gray-600">
-                          {category.totalSpots} spots
-                        </span>
+                  <div className="flex justify-between items-start gap-4">
+                    <div className="flex-grow">
+                      <div className="flex items-center justify-between mb-2">
+                        <h3 className="font-semibold text-lg text-teal-900">
+                          {category.name}
+                        </h3>
+                        <div className="space-x-2 flex">
+                          <button
+                            onClick={() => {
+                              setNewCategory(category);
+                              setIsEditing(true);
+                              setEditId(category._id);
+                            }}
+                            className="text-blue-600 hover:text-blue-800 p-1 rounded hover:bg-blue-50"
+                          >
+                            <FaEdit size={20} />
+                          </button>
+                          <button
+                            onClick={() => handleDelete(category._id)}
+                            className="text-red-600 hover:text-red-800 p-1 rounded hover:bg-red-50"
+                          >
+                            <FaTrash size={20} />
+                          </button>
+                        </div>
+                      </div>
+
+                      <div className="grid grid-cols-2 gap-4 mb-3">
+                        <div className="bg-teal-50 p-2 rounded">
+                          <p className="text-sm text-teal-900 font-medium">
+                            Hourly Rate
+                          </p>
+                          <p className="text-lg font-bold text-teal-700">
+                            ${category.hourlyRate}/hr
+                          </p>
+                        </div>
+                        <div className="bg-teal-50 p-2 rounded">
+                          <p className="text-sm text-teal-900 font-medium">
+                            Total Spots
+                          </p>
+                          <p className="text-lg font-bold text-teal-700">
+                            {category.totalSpots}
+                          </p>
+                        </div>
+                      </div>
+
+                      <div className="space-y-2">
+                        <p className="text-sm text-gray-600">
+                          <span className="font-medium">Description: </span>
+                          {category.description}
+                        </p>
+                        {category.securityFeatures && (
+                          <p className="text-sm text-gray-600">
+                            <span className="font-medium">
+                              Security Features:{" "}
+                            </span>
+                            {category.securityFeatures}
+                          </p>
+                        )}
                       </div>
                     </div>
-                    <div className="space-x-2">
-                      <button
-                        onClick={() => {
-                          setNewCategory(category);
-                          setIsEditing(true);
-                          setEditId(category._id);
-                        }}
-                        className="text-blue-600 hover:text-blue-800"
-                      >
-                        <FaEdit size={20} />
-                      </button>
-                      <button
-                        onClick={() => handleDelete(category._id)}
-                        className="text-red-600 hover:text-red-800"
-                      >
-                        <FaTrash size={20} />
-                      </button>
-                    </div>
+
+                    {category.image && (
+                      <div className="flex-shrink-0">
+                        <img
+                          src={category.image}
+                          alt={category.name}
+                          className="w-32 h-32 object-cover rounded-lg shadow-md"
+                        />
+                      </div>
+                    )}
                   </div>
                 </div>
               ))}

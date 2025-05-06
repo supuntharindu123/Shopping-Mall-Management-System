@@ -1,27 +1,16 @@
 import mongoose from "mongoose";
 
-const ParkingCategorySchema = new mongoose.Schema({
-  categoryname: {
-    type: String,
-    required: true,
-    unique: true,
-  },
-  location: {
-    type: String,
-    required: true,
-  },
-  security: {
-    type: String,
-    required: true,
-  },
-  pricePerHour: {
-    type: Number,
-    required: true,
-  },
+const parkingCategorySchema = new mongoose.Schema({
+  name: { type: String, required: true },
+  hourlyRate: { type: Number, required: true },
+  totalSpots: { type: Number, required: true },
+  description: { type: String },
+  securityFeatures: { type: String },
+  image: { type: String }, // stores file path
 });
 
 const ParkingCategory = mongoose.model(
   "ParkingCategory",
-  ParkingCategorySchema
+  parkingCategorySchema
 );
-export default ParkingCategory;
+export default ParkingCategory; // Export the schema for use in other files

@@ -1,4 +1,6 @@
 import { Router } from "express";
+import multer from "multer";
+import path from "path";
 import {
   GetUserDetails,
   LoginUser,
@@ -21,10 +23,14 @@ import {
 } from "./controller/membershipcontroller/membership.js";
 import {
   addParking,
+  addParkingCategory,
   checkAvailability,
   CreateParking,
+  deletecategory,
   deleteParking,
+  getallcategory,
   getAllParking,
+  updatecategory,
 } from "./controller/parkingcontroller/parkingcontroller.js";
 import { Bookingparking } from "./controller/parkingcontroller/bookingparking.js";
 import SellingHistory from "./models/SellingHistory.js";
@@ -54,6 +60,16 @@ router.get("/", (req, res) => {
   res.send("Hello, World!");
 });
 
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, "uploads/");
+  },
+  filename: (req, file, cb) => {
+    cb(null, Date.now() + path.extname(file.originalname));
+  },
+});
+const upload = multer({ storage });
+
 router.post("/register", RegisterUser);
 router.post("/login", LoginUser);
 router.post("/purchase", Purchasing);
@@ -78,6 +94,10 @@ router.delete("/parkings/:id", deleteParking);
 router.post("/booking", Bookingparking);
 router.get("/check-availability", checkAvailability);
 router.post("/addparking", addParking);
+router.post("/parkingcategory", upload.single("image"), addParkingCategory);
+router.get("/parkingcategory", getallcategory);
+router.put("/parkingcategory/:id", upload.single("image"), updatecategory);
+router.delete("/parkingcategory/:id", deletecategory);
 
 //store
 router.post("/add-selling-history", createSellingHistory);
