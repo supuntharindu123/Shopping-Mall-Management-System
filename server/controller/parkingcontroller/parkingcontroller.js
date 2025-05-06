@@ -27,14 +27,18 @@ export async function checkAvailability(req, res) {
 
     res.status(200).json({
       isAvailable,
+      title: isAvailable ? "Spot Available!" : "Spot Unavailable",
       message: isAvailable
-        ? "Time slot is available"
-        : "Time slot is already booked",
+        ? `Parking spot is available for your selected time`
+        : `This time slot is already booked. Please select another time`,
+      icon: isAvailable ? "success" : "warning",
     });
   } catch (error) {
     res.status(500).json({
       isAvailable: false,
-      message: "Error checking availability",
+      title: "Error",
+      message: "Unable to check availability. Please try again.",
+      icon: "error",
       error: error.message,
     });
   }
@@ -70,7 +74,9 @@ export async function CreateParking(req, res) {
 
     if (overlappingBookings.length > 0) {
       return res.status(400).json({
-        message: "Selected time slot is not available",
+        title: "Booking Failed",
+        message: "This time slot is already taken. Please choose another time.",
+        icon: "error",
       });
     }
 
@@ -88,15 +94,36 @@ export async function CreateParking(req, res) {
     await newParking.save();
     res.status(200).json({
       success: true,
-      message: "Parking booked successfully",
+      title: "Booking Successful!",
+      message: `Your parking spot has been booked for ${new Date(
+        arrivalTime
+      ).toLocaleString()}`,
+      icon: "success",
       booking: newParking,
     });
   } catch (error) {
     res.status(500).json({
       success: false,
-      message: "Error booking parking",
+      title: "Booking Failed",
+      message: "Unable to process your booking. Please try again.",
+      icon: "error",
       error: error.message,
     });
+  }
+}
+
+export async function addParking(req, res) {
+  try {
+    const { parkingCategory, vehicleType, location } = req.body;
+    const newParking = new Parking({
+      parkingCategory,
+      vehicleType,
+      location,
+    });
+    await newParking.save();
+    res.status(201).json({ message: "Parking added successfully", newParking });
+  } catch (error) {
+    res.status(500).json({ message: "Error adding parking", error });
   }
 }
 

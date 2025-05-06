@@ -20,6 +20,7 @@ import {
   removepkg,
 } from "./controller/membershipcontroller/membership.js";
 import {
+  addParking,
   checkAvailability,
   CreateParking,
   deleteParking,
@@ -76,6 +77,7 @@ router.get("/parkings", getAllParking);
 router.delete("/parkings/:id", deleteParking);
 router.post("/booking", Bookingparking);
 router.get("/check-availability", checkAvailability);
+router.post("/addparking", addParking);
 
 //store
 router.post("/add-selling-history", createSellingHistory);

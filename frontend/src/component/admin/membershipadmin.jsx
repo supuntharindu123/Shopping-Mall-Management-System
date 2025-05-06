@@ -203,7 +203,7 @@ const MembershipAdmin = () => {
             href="/membershipadmin"
             className="bg-teal-800 hover:bg-teal-700 px-4 py-2 rounded"
           >
-            Transaction
+            Memberships
           </a>
         </div>
       </div>

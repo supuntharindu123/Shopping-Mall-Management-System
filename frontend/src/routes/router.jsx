@@ -1,9 +1,9 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Home from "../component/pages/home";
-import MembershipPage from "../component/pages/membership";
+
 import Navbar from "../component/navbar/navbar";
 import Footer from "../component/footer/footer";
-import AdminDashboard from "../component/pages/membership";
+
 import Membershipdash from "../component/pages/membershipdash";
 import PaymentPage from "../component/pages/payement";
 import ContactUs from "../component/pages/contact";
@@ -18,18 +18,23 @@ import AddTransaction from "../component/admin/addtransaction";
 
 //parking
 
-import AddParking from "../component/Parking/AddParking";
 import EditParking from "../component/Parking/EditParking";
-import ParkingDashboard from "../component/Parking/ParkingDashboard";
+
 import ParkingList from "../component/Parking/ParkingList";
 import ParkingHome from "../component/Parking/ParkingHome";
-import ParkingAdd from "../component/Parking/adminparking/parkingadd";
+
 import FAQPage from "../component/pages/faq";
 import SecurityLostFound from "../component/pages/security";
 import RegisterPage from "../component/userprofile/register";
 import AdminDashboards from "../component/userprofile/useradmin";
 import Logout from "../component/userprofile/logout";
 import WrappedPurchaseForm from "../component/packges/purchasepackage";
+import AddParking from "../component/parking/adminparking/parkingadd";
+import BookingPage from "../component/parking/AddParking";
+import ParkingCategory from "../component/parking/adminparking/parkingcategory";
+import AvailableSpots from "../component/parking/AvailableSpots";
+import ReserveSpots from "../component/parking/ReserveSpots";
+import ParkingDashboard from "../component/parking/ParkingDashboard";
 // import Dashboard from "../component/store/Dashboard";
 // import Products from "../component/store/Products";
 // import AddProduct from "../component/store/AddProduct";
@@ -125,7 +130,7 @@ function App() {
     },
     {
       path: "/addparking",
-      element: <AddParking />,
+      element: <BookingPage />,
     },
     {
       path: "/editparking",
@@ -141,7 +146,19 @@ function App() {
     },
     {
       path: "/parkingadd",
-      element: <ParkingAdd />,
+      element: <AddParking />,
+    },
+    {
+      path: "/parkingcategory",
+      element: <ParkingCategory />,
+    },
+    {
+      path: "/availableparkingspots",
+      element: <AvailableSpots />,
+    },
+    {
+      path: "/reserveparkingspots",
+      element: <ReserveSpots />,
     },
 
     //store

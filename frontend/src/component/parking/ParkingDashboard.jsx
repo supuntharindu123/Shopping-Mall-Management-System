@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { FaTrash, FaEdit } from "react-icons/fa"; // Import React Icons
 
-function ParkingList() {
+function ParkingDashboard() {
   const [parkingData, setParkingData] = useState([]);
   const [search, setSearch] = useState("");
   const [filterCategory, setFilterCategory] = useState("");
@@ -92,13 +92,19 @@ function ParkingList() {
       <div className="flex justify-center items-center mb-6">
         <nav className="space-x-4 bg-teal-900  py-3 mr-10">
           <a
+            href="/parkingdashboard"
+            className="text-white font-bold hover:bg-gray-800 transition duration-300 py-3 px-6"
+          >
+            Dashboard
+          </a>
+          <a
             href="/parkingadd"
             className="text-white font-bold hover:bg-gray-800 transition duration-300 py-3 px-6"
           >
             Add Parking
           </a>
           <a
-            href="/addcategories"
+            href="/parkingcategory"
             className="text-white font-bold hover:bg-gray-800 transition duration-300 py-3 px-6"
           >
             Add Categories
@@ -116,13 +122,6 @@ function ParkingList() {
             Reserve Spots
           </a>
         </nav>
-        <input
-          type="text"
-          placeholder="Search..."
-          className="border p-3 rounded-lg w-72"
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-        />
       </div>
 
       <div className="max-w-6xl mx-auto bg-white p-6 rounded-xl shadow-lg">
@@ -137,6 +136,13 @@ function ParkingList() {
             <option value="Ground">Ground</option>
             <option value="Open">Open</option>
           </select>
+          <input
+            type="text"
+            placeholder="Search..."
+            className="border p-3 rounded-lg w-72"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+          />
           <select
             className="border p-3 rounded-lg"
             value={filterType}
@@ -185,4 +191,4 @@ function ParkingList() {
   );
 }
 
-export default ParkingList;
+export default ParkingDashboard;

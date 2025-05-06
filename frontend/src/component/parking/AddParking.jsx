@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import Swal from "sweetalert2";
 
-function AddParking() {
+function BookingPage() {
   const [fullName, setFullName] = useState("");
   const [licensePlate, setLicensePlate] = useState("");
   const [parkingSpot, setParkingSpot] = useState("");
@@ -34,11 +35,24 @@ function AddParking() {
         }
       );
       const data = await response.json();
+
+      Swal.fire({
+        title: data.title,
+        text: data.message,
+        icon: data.icon,
+        confirmButtonColor: "#115e59",
+      });
+
       setIsTimeSlotAvailable(data.isAvailable);
       setTimeError(data.isAvailable ? "" : "This time slot is already booked");
       return data.isAvailable;
     } catch (error) {
-      console.error("Error checking availability:", error);
+      Swal.fire({
+        title: "Error",
+        text: "Unable to check availability",
+        icon: "error",
+        confirmButtonColor: "#115e59",
+      });
       setTimeError("Error checking availability");
       return false;
     }
@@ -74,7 +88,12 @@ function AddParking() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!isTimeSlotAvailable) {
-      alert("Please select an available time slot");
+      Swal.fire({
+        title: "Error",
+        text: "Please select an available time slot",
+        icon: "error",
+        confirmButtonColor: "#115e59",
+      });
       return;
     }
     try {
@@ -95,8 +114,15 @@ function AddParking() {
       });
 
       const data = await response.json();
+
       if (response.ok) {
-        alert("Parking Added Successfully");
+        await Swal.fire({
+          title: data.title,
+          text: data.message,
+          icon: data.icon,
+          confirmButtonColor: "#115e59",
+        });
+
         setArrivalTime("");
         setDepartureTime("");
         setFullName("");
@@ -106,11 +132,20 @@ function AddParking() {
         setNetAmount(0);
         navigate("/");
       } else {
-        alert(`Error: ${data.message || "Failed to add parking"}`);
+        Swal.fire({
+          title: data.title,
+          text: data.message,
+          icon: data.icon,
+          confirmButtonColor: "#115e59",
+        });
       }
     } catch (error) {
-      console.error("Error Adding Parking:", error);
-      alert("Error connecting to server");
+      Swal.fire({
+        title: "Error",
+        text: "Unable to process your booking",
+        icon: "error",
+        confirmButtonColor: "#115e59",
+      });
     }
   };
 
@@ -125,7 +160,7 @@ function AddParking() {
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gray-50">
+    <div className="flex items-center justify-center min-h-screen bg-gray-50 py-6">
       <div className="bg-white p-6 rounded-2xl shadow-xl w-full max-w-md">
         <h2 className="text-teal-900 text-2xl font-bold mb-4 text-center">
           Book & Pay for Parking
@@ -234,4 +269,4 @@ function AddParking() {
   );
 }
 
-export default AddParking;
+export default BookingPage;
