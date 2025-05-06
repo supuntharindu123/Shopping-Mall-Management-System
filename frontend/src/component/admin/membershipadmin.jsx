@@ -177,7 +177,7 @@ const MembershipAdmin = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-teal-50 to-blue-50 p-4 md:p-8">
+    <div className="min-h-screen bg-gradient-to-br from-teal-50 to-blue-50">
       <div className="bg-teal-900 text-white p-4 flex justify-between items-center mb-5">
         <div className="text-xl font-bold">Admin Dashboard</div>
         <div className="flex space-x-4">
@@ -204,12 +204,6 @@ const MembershipAdmin = () => {
             className="bg-teal-800 hover:bg-teal-700 px-4 py-2 rounded"
           >
             Transaction
-          </a>
-          <a
-            className="bg-teal-800 hover:bg-teal-700 px-4 py-2 rounded"
-            href="/logout"
-          >
-            Logout
           </a>
         </div>
       </div>

@@ -47,7 +47,7 @@ const AdminDashboard = () => {
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Navbar */}
-      <div className="bg-teal-900 text-white p-4 flex justify-between items-center">
+      <div className="bg-teal-900 text-white p-4 flex justify-between items-center mb-4">
         <div className="text-xl font-bold">Admin Dashboard</div>
         <div className="flex space-x-4">
           <a
@@ -73,9 +73,6 @@ const AdminDashboard = () => {
             className="bg-teal-800 hover:bg-teal-700 px-4 py-2 rounded"
           >
             Transaction
-          </a>
-          <a className="bg-teal-800 hover:bg-teal-700 px-4 py-2 rounded">
-            Logout
           </a>
         </div>
       </div>
