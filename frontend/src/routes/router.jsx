@@ -30,11 +30,12 @@ import AdminDashboards from "../component/userprofile/useradmin";
 import Logout from "../component/userprofile/logout";
 import WrappedPurchaseForm from "../component/packges/purchasepackage";
 import AddParking from "../component/parking/adminparking/parkingadd";
-import BookingPage from "../component/parking/AddParking";
+
 import ParkingCategory from "../component/parking/adminparking/parkingcategory";
 import AvailableSpots from "../component/parking/AvailableSpots";
 import ReserveSpots from "../component/parking/ReserveSpots";
 import ParkingDashboard from "../component/parking/ParkingDashboard";
+import BookingPage from "../component/parking/BookingParking";
 // import Dashboard from "../component/store/Dashboard";
 // import Products from "../component/store/Products";
 // import AddProduct from "../component/store/AddProduct";
@@ -125,13 +126,14 @@ function App() {
 
     //parking
     {
+      path: "/booking",
+      element: <BookingPage />,
+    },
+    {
       path: "/parkingHome",
       element: <ParkingHome />,
     },
-    {
-      path: "/addparking",
-      element: <BookingPage />,
-    },
+
     {
       path: "/editparking",
       element: <EditParking />,

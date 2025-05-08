@@ -22,14 +22,12 @@ import {
   removepkg,
 } from "./controller/membershipcontroller/membership.js";
 import {
-  addParking,
   addParkingCategory,
   checkAvailability,
-  CreateParking,
   deletecategory,
-  deleteParking,
   getallcategory,
-  getAllParking,
+  getcategorybyid,
+  ParkingBook,
   updatecategory,
 } from "./controller/parkingcontroller/parkingcontroller.js";
 import { Bookingparking } from "./controller/parkingcontroller/bookingparking.js";
@@ -88,16 +86,17 @@ router.put("/packages/:id", updatePackage);
 router.delete("/packages/:id", removepkg);
 
 //parking
-router.post("/parking", CreateParking);
-router.get("/parkings", getAllParking);
-router.delete("/parkings/:id", deleteParking);
-router.post("/booking", Bookingparking);
+// router.post("/parking", CreateParking);
+// router.get("/parkings", getAllParking);
+// router.delete("/parkings/:id", deleteParking);
+router.post("/booking", ParkingBook);
 router.get("/check-availability", checkAvailability);
-router.post("/addparking", addParking);
+// router.post("/addparking", addParking);
 router.post("/parkingcategory", upload.single("image"), addParkingCategory);
 router.get("/parkingcategory", getallcategory);
 router.put("/parkingcategory/:id", upload.single("image"), updatecategory);
 router.delete("/parkingcategory/:id", deletecategory);
+router.get("/parkingcategory/:id", getcategorybyid);
 
 //store
 router.post("/add-selling-history", createSellingHistory);

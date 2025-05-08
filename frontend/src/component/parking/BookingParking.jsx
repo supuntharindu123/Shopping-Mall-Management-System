@@ -1,8 +1,11 @@
+import axios from "axios";
 import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import Swal from "sweetalert2";
 
 function BookingPage() {
+  const [searchParams] = useSearchParams();
+  const category = searchParams.get("category");
   const [fullName, setFullName] = useState("");
   const [licensePlate, setLicensePlate] = useState("");
   const [parkingSpot, setParkingSpot] = useState("");
@@ -10,92 +13,83 @@ function BookingPage() {
   const [arrivalTime, setArrivalTime] = useState("");
   const [departureTime, setDepartureTime] = useState("");
   const [netAmount, setNetAmount] = useState(0);
-  const [isTimeSlotAvailable, setIsTimeSlotAvailable] = useState(true);
   const [timeError, setTimeError] = useState("");
+  const [id, setid] = useState("");
+
   const navigate = useNavigate();
 
-  const parkingRates = {
-    "Basement Parking": 2.0,
-    "1st Floor Parking": 1.5,
-    "Backyard Parking": 0.0,
-  };
-
-  const checkTimeSlotAvailability = async (start, end, spot) => {
-    try {
-      const response = await fetch(
-        "http://localhost:3001/api/check-availability",
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            parkingSpot: spot,
-            arrivalTime: start,
-            departureTime: end,
-          }),
-        }
-      );
-      const data = await response.json();
-
-      Swal.fire({
-        title: data.title,
-        text: data.message,
-        icon: data.icon,
-        confirmButtonColor: "#115e59",
-      });
-
-      setIsTimeSlotAvailable(data.isAvailable);
-      setTimeError(data.isAvailable ? "" : "This time slot is already booked");
-      return data.isAvailable;
-    } catch (error) {
-      Swal.fire({
-        title: "Error",
-        text: "Unable to check availability",
-        icon: "error",
-        confirmButtonColor: "#115e59",
-      });
-      setTimeError("Error checking availability");
-      return false;
+  useEffect(() => {
+    if (category) {
+      setid(category);
     }
-  };
+  }, [category]);
 
-  const handleTimeChange = async (value, type) => {
+  useEffect(() => {
+    const userData = JSON.parse(localStorage.getItem("user"));
+    setFullName(userData.username);
+  }, []);
+
+  useEffect(() => {
+    const fetchParkingData = async () => {
+      try {
+        const response = await axios.get(
+          `http://localhost:3001/api/parkingcategory/${id}`
+        );
+        console.log("Parking data:", response.data); // Add this to debug
+
+        setParkingSpot(response.data.name); // Set parkingSpot automatically
+      } catch (error) {
+        console.error("Error fetching parking data:", error);
+      }
+    };
+    if (id) {
+      fetchParkingData();
+    }
+  }, [id]);
+
+  const handleTimeChange = (value, type) => {
     if (type === "arrival") {
       setArrivalTime(value);
       if (departureTime && value >= departureTime) {
         setTimeError("Arrival time must be before departure time");
-        setIsTimeSlotAvailable(false);
+        Swal.fire({
+          title: "Error",
+          text: "Arrival time must be before departure time",
+          icon: "error",
+          confirmButtonColor: "#115e59",
+        });
         return;
       }
     } else {
       setDepartureTime(value);
       if (arrivalTime && value <= arrivalTime) {
         setTimeError("Departure time must be after arrival time");
-        setIsTimeSlotAvailable(false);
+        Swal.fire({
+          title: "Error",
+          text: "Departure time must be after arrival time",
+          icon: "error",
+          confirmButtonColor: "#115e59",
+        });
         return;
       }
     }
-
-    if (parkingSpot && arrivalTime && departureTime) {
-      await checkTimeSlotAvailability(
-        type === "arrival" ? value : arrivalTime,
-        type === "departure" ? value : departureTime,
-        parkingSpot
-      );
-      calculateAmount();
-    }
+    setTimeError("");
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!isTimeSlotAvailable) {
+
+    // Validate times before submission
+    if (timeError) {
       Swal.fire({
         title: "Error",
-        text: "Please select an available time slot",
+        text: timeError,
         icon: "error",
         confirmButtonColor: "#115e59",
       });
       return;
     }
+
     try {
       const response = await fetch("http://localhost:3001/api/booking", {
         method: "POST",
@@ -110,16 +104,17 @@ function BookingPage() {
           arrivalTime,
           departureTime,
           netAmount,
+          status: "Pending",
         }),
       });
 
       const data = await response.json();
 
-      if (response.ok) {
+      if (response.ok && !timeError) {
         await Swal.fire({
-          title: data.title,
-          text: data.message,
-          icon: data.icon,
+          title: "Success",
+          text: "Booking completed successfully!",
+          icon: "success",
           confirmButtonColor: "#115e59",
         });
 
@@ -133,9 +128,9 @@ function BookingPage() {
         navigate("/");
       } else {
         Swal.fire({
-          title: data.title,
-          text: data.message,
-          icon: data.icon,
+          title: "Error",
+          text: data.message || "Something went wrong",
+          icon: "error",
           confirmButtonColor: "#115e59",
         });
       }
@@ -149,16 +144,6 @@ function BookingPage() {
     }
   };
 
-  const calculateAmount = () => {
-    if (arrivalTime && departureTime && parkingSpot) {
-      const arrival = new Date(arrivalTime);
-      const departure = new Date(departureTime);
-      const duration = (departure - arrival) / (1000 * 60 * 60); // Convert ms to hours
-      const pricePerHour = parkingRates[parkingSpot] || 0;
-      setNetAmount(duration * pricePerHour);
-    }
-  };
-
   return (
     <div className="flex items-center justify-center min-h-screen bg-gray-50 py-6">
       <div className="bg-white p-6 rounded-2xl shadow-xl w-full max-w-md">
@@ -166,13 +151,14 @@ function BookingPage() {
           Book & Pay for Parking
         </h2>
         <form onSubmit={handleSubmit} className="space-y-4">
-          <label className="block text-teal-900 font-medium">Full Name:</label>
+          <label className="block text-teal-900 font-medium ">Full Name:</label>
           <input
             type="text"
             value={fullName}
+            disabled
             onChange={(e) => setFullName(e.target.value)}
             required
-            className="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-900"
+            className="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-900 bg-gray-200"
           />
 
           <label className="block text-teal-900 font-medium">
@@ -189,17 +175,12 @@ function BookingPage() {
           <label className="block text-teal-900 font-medium">
             Parking Type:
           </label>
-          <select
+          <input
+            type="text"
             value={parkingSpot}
-            onChange={(e) => setParkingSpot(e.target.value)}
-            required
-            className="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-900"
-          >
-            <option value="">Select Parking Type</option>
-            <option value="Basement Parking">Basement Parking</option>
-            <option value="1st Floor Parking">1st Floor Parking</option>
-            <option value="Backyard Parking">Backyard Parking</option>
-          </select>
+            disabled
+            className="bg-gray-200 w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-900"
+          />
 
           <label className="block text-teal-900 font-medium">
             Vehicle Type:
@@ -246,16 +227,6 @@ function BookingPage() {
           {timeError && (
             <div className="text-red-500 text-sm mt-1">{timeError}</div>
           )}
-
-          {isTimeSlotAvailable && arrivalTime && departureTime && (
-            <div className="text-green-500 text-sm mt-1">
-              Time slot available!
-            </div>
-          )}
-
-          <div className="bg-teal-900 text-white p-2 rounded-lg text-center">
-            <p className="font-medium">Total Price: ${netAmount.toFixed(2)}</p>
-          </div>
 
           <button
             type="submit"

@@ -72,7 +72,7 @@ function ParkingHome() {
             <p className="text-gray-600 text-sm mt-2">{category.description}</p>
 
             <Link
-              to={`/Addparking?category=${category._id}&duration=${selectedDuration}`}
+              to={`/booking?category=${category._id}`}
               className="block mt-4 bg-teal-900 text-white py-2 px-4 rounded-lg hover:bg-gray-400"
             >
               Select {category.name}

@@ -49,7 +49,7 @@ export async function checkAvailability(req, res) {
 }
 
 // Modify CreateParking to check availability first
-export async function CreateParking(req, res) {
+export async function ParkingBook(req, res) {
   try {
     const {
       fullName,
@@ -58,7 +58,8 @@ export async function CreateParking(req, res) {
       vehicleType,
       arrivalTime,
       departureTime,
-      netAmount,
+
+      status,
     } = req.body;
 
     // Check for overlapping bookings first
@@ -84,7 +85,7 @@ export async function CreateParking(req, res) {
       });
     }
 
-    const newParking = new Parking({
+    const newParking = new Booking({
       fullName,
       licensePlate,
       parkingSpot,
@@ -92,7 +93,7 @@ export async function CreateParking(req, res) {
       arrivalTime,
       departureTime,
       netAmount,
-      status: "active",
+      status,
     });
 
     await newParking.save();
@@ -116,30 +117,30 @@ export async function CreateParking(req, res) {
   }
 }
 
-export async function addParking(req, res) {
-  try {
-    const { parkingCategory, vehicleType, location } = req.body;
-    const newParking = new Parking({
-      parkingCategory,
-      vehicleType,
-      location,
-    });
-    await newParking.save();
-    res.status(201).json({ message: "Parking added successfully", newParking });
-  } catch (error) {
-    res.status(500).json({ message: "Error adding parking", error });
-  }
-}
+// export async function addParking(req, res) {
+//   try {
+//     const { parkingCategory, vehicleType, location } = req.body;
+//     const newParking = new Parking({
+//       parkingCategory,
+//       vehicleType,
+//       location,
+//     });
+//     await newParking.save();
+//     res.status(201).json({ message: "Parking added successfully", newParking });
+//   } catch (error) {
+//     res.status(500).json({ message: "Error adding parking", error });
+//   }
+// }
 
 // Get All Parking Entries
-export async function getAllParking(req, res) {
-  try {
-    const parkingList = await Parking.find();
-    res.status(200).json(parkingList);
-  } catch (error) {
-    res.status(500).json({ message: "Error fetching parking data", error });
-  }
-}
+// export async function getAllParking(req, res) {
+//   try {
+//     const parkingList = await Parking.find();
+//     res.status(200).json(parkingList);
+//   } catch (error) {
+//     res.status(500).json({ message: "Error fetching parking data", error });
+//   }
+// }
 
 export async function addParkingCategory(req, res) {
   try {
@@ -232,6 +233,17 @@ export async function deletecategory(req, res) {
       .json({ message: "Category and image deleted successfully" });
   } catch (error) {
     console.error("Error deleting category:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+}
+
+export async function getcategorybyid(req, res) {
+  const id = req.params.id;
+  try {
+    const category = await ParkingCategory.findById(id);
+    res.status(200).json(category);
+  } catch (err) {
+    console.error("Error fetching category:", err);
     res.status(500).json({ message: "Internal server error" });
   }
 }
