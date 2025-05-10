@@ -3,6 +3,7 @@ import Package from "../../models/Package.js";
 import Transaction from "../../models/Transaction.js";
 import Reward from "../../models/Reward.js";
 import purchasepackage from "../../models/purchasepackage.js";
+import PDF from "pdfkit";
 
 export async function Purchasing(req, res) {
   try {
@@ -196,6 +197,20 @@ export async function getUserMembershipPackage(req, res) {
     res.status(200).json(pkg);
   } catch (error) {
     console.error("Error in getUserMembershipPackage:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+}
+
+export async function getAllPackages(req, res) {
+  try {
+    const packages = await Package.find();
+    if (!packages) {
+      return res.status(404).json({ message: "No packages found" });
+    }
+
+    res.status(200).json(packages);
+  } catch (error) {
+    console.error("Error in getAllPackages:", error);
     res.status(500).json({ message: "Internal server error" });
   }
 }

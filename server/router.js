@@ -20,6 +20,7 @@ import {
   getUserMembershipPackage,
   updatePackage,
   removepkg,
+  getAllPackages,
 } from "./controller/membershipcontroller/membership.js";
 import {
   addParkingCategory,
@@ -84,6 +85,7 @@ router.delete("/removetransaction/:transactionId", removeTransaction);
 router.get("/packages", getUserMembershipPackage);
 router.put("/packages/:id", updatePackage);
 router.delete("/packages/:id", removepkg);
+router.get("/pkg", getAllPackages);
 
 //parking
 // router.post("/parking", CreateParking);
