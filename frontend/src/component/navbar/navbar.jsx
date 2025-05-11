@@ -50,10 +50,10 @@ function Navbar() {
             </li>
             <li>
               <a
-                href="#stores"
+                href="/shops"
                 className="flex items-center space-x-2 text-white hover:text-gray-400 px-4  rounded-lg text-2xl font-bold transition"
               >
-                Stores
+                Shops
               </a>
             </li>
             <li className="relative">

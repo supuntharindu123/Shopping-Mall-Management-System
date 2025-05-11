@@ -36,6 +36,12 @@ import AvailableSpots from "../component/parking/AvailableSpots";
 import ReserveSpots from "../component/parking/ReserveSpots";
 import ParkingDashboard from "../component/parking/ParkingDashboard";
 import BookingPage from "../component/parking/BookingParking";
+
+import Addshops from "../component/store/addshops";
+import Adminshop from "../component/store/adminstore";
+import AllShops from "../component/store/shops";
+import Viewshop from "../component/store/viewshop";
+import Adminviewshop from "../component/store/adminviewshop";
 // import Dashboard from "../component/store/Dashboard";
 // import Products from "../component/store/Products";
 // import AddProduct from "../component/store/AddProduct";
@@ -164,34 +170,26 @@ function App() {
     },
 
     //store
-    // {
-    //   path: "/dashboard",
-    //   element: <Dashboard />,
-    // },
-    // {
-    //   path: "/products",
-    //   element: <Products />,
-    // },
-    // {
-    //   path: "/addProduct",
-    //   element: <AddProduct />,
-    // },
-    // {
-    //   path: "/updateProduct/:productId",
-    //   element: <UpdateProduct />,
-    // },
-    // {
-    //   path: "/addSupplier",
-    //   element: <AddSupplier />,
-    // },
-    // {
-    //   path: "/updateSupplier/:supplierId",
-    //   element: <UpdateSupplier />,
-    // },
-    // {
-    //   path: "/notifications",
-    //   element: <Notifications />,
-    // },
+    {
+      path: "/adminshop",
+      element: <Adminshop />,
+    },
+    {
+      path: "/shopadd",
+      element: <Addshops />,
+    },
+    {
+      path: "/shops",
+      element: <AllShops />,
+    },
+    {
+      path: "/shop/:id",
+      element: <Viewshop />,
+    },
+    {
+      path: "/adminshop/:id",
+      element: <Adminviewshop />,
+    },
   ];
   return (
     <BrowserRouter>

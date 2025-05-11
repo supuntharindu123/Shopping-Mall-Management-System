@@ -66,10 +66,10 @@ function ParkingDashboard() {
             User Management
           </a>
           <a
-            href="/store"
+            href="/adminstore"
             className="bg-teal-800 hover:bg-teal-700 px-4 py-2 rounded"
           >
-            Store Management
+            Shop Management
           </a>
           <a
             href="/parkingdashboard"

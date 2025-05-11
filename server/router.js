@@ -31,27 +31,11 @@ import {
   ParkingBook,
   updatecategory,
 } from "./controller/parkingcontroller/parkingcontroller.js";
-import { Bookingparking } from "./controller/parkingcontroller/bookingparking.js";
-import SellingHistory from "./models/SellingHistory.js";
 import {
-  createSellingHistory,
-  getAllSellingHistory,
-} from "./controller/storecontroller/sellingHistoryController.js";
-import {
-  createProduct,
-  deleteProduct,
-  getAllProducts,
-  getMostSellingProducts,
-  getProductById,
-  updateProduct,
-} from "./controller/storecontroller/storeController.js";
-import {
-  createSupplier,
-  deleteSupplier,
-  getAllSuppliers,
-  getSupplierById,
-  updateSupplier,
-} from "./controller/storecontroller/supplierController.js";
+  Addshops,
+  GetShopById,
+  GetShops,
+} from "./controller/shopcontroller/shopcontroller.js";
 
 const router = Router();
 
@@ -100,21 +84,9 @@ router.put("/parkingcategory/:id", upload.single("image"), updatecategory);
 router.delete("/parkingcategory/:id", deletecategory);
 router.get("/parkingcategory/:id", getcategorybyid);
 
-//store
-router.post("/add-selling-history", createSellingHistory);
-router.get("/get-all-selling-history", getAllSellingHistory);
-router.post("/create_product", createProduct);
-router.put("/update_product/:id", updateProduct);
-router.get("/products/most-selling", getMostSellingProducts);
-router.get("/get_all_products", getAllProducts);
-router.get("/get_product/:id", getProductById);
-router.delete("/delete_product/:id", deleteProduct);
-
-// Supplier Routes
-router.post("/create_supplier", createSupplier);
-router.get("/get_all_suppliers", getAllSuppliers);
-router.get("/get_supplier/:id", getSupplierById);
-router.put("/update_supplier/:id", updateSupplier);
-router.delete("/delete_supplier/:id", deleteSupplier);
+//shop
+router.post("/addshop", upload.single("image"), Addshops);
+router.get("/shops", GetShops);
+router.get("/shop/:id", GetShopById);
 
 export default router;

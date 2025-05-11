@@ -207,8 +207,10 @@ export async function getAllPackages(req, res) {
     if (!packages) {
       return res.status(404).json({ message: "No packages found" });
     }
-
-    res.status(200).json(packages);
+    const pkg = packages.map((pkg) => {
+      name = pkg.name;
+    });
+    res.status(200).json(pkg);
   } catch (error) {
     console.error("Error in getAllPackages:", error);
     res.status(500).json({ message: "Internal server error" });
