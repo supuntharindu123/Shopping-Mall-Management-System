@@ -33,9 +33,18 @@ import {
 } from "./controller/parkingcontroller/parkingcontroller.js";
 import {
   Addshops,
+  DeleteShop,
   GetShopById,
   GetShops,
+  UpdateShop,
 } from "./controller/shopcontroller/shopcontroller.js";
+import {
+  addItem,
+  deleteItem,
+  getItemById,
+  getItems,
+  updateItem,
+} from "./controller/shopcontroller/itemcontroller.js";
 
 const router = Router();
 
@@ -88,5 +97,12 @@ router.get("/parkingcategory/:id", getcategorybyid);
 router.post("/addshop", upload.single("image"), Addshops);
 router.get("/shops", GetShops);
 router.get("/shop/:id", GetShopById);
+router.put("/shop/:id", upload.single("image"), UpdateShop);
+router.delete("/shop/:id", DeleteShop);
+router.get("/shop/:shopId/items", getItems);
+router.post("/shop/:shopId/items", upload.single("image"), addItem);
+router.put("/items/:id", upload.single("image"), updateItem);
+router.delete("/items/:id", deleteItem);
+router.get("/items/:id", getItemById);
 
 export default router;

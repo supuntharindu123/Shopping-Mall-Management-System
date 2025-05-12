@@ -1,6 +1,8 @@
 import React, { useState } from "react";
+import { useParams, useNavigate } from "react-router-dom";
 
 function Addshops() {
+  const navigate = useNavigate();
   const [shopData, setShopData] = useState({
     shopName: "",
     shopNumber: "",
@@ -100,6 +102,7 @@ function Addshops() {
         });
         setShopImage(null);
         setImagePreview(null);
+        navigate("/adminshop");
       } else {
         const errorData = await response.json();
         throw new Error(errorData.message || "Failed to add shop");

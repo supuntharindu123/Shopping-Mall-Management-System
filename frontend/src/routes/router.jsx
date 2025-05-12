@@ -42,6 +42,7 @@ import Adminshop from "../component/store/adminstore";
 import AllShops from "../component/store/shops";
 import Viewshop from "../component/store/viewshop";
 import Adminviewshop from "../component/store/adminviewshop";
+import Transaction from "../component/store/transaction";
 // import Dashboard from "../component/store/Dashboard";
 // import Products from "../component/store/Products";
 // import AddProduct from "../component/store/AddProduct";
@@ -189,6 +190,10 @@ function App() {
     {
       path: "/adminshop/:id",
       element: <Adminviewshop />,
+    },
+    {
+      path: "/shop/:id/transactions",
+      element: <Transaction />,
     },
   ];
   return (
