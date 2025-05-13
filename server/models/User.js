@@ -11,6 +11,8 @@ const UserSchema = new mongoose.Schema({
     {
       packagename: { type: String, default: "basics" },
       activatedate: { type: Date, default: Date.now },
+      pointsPerDollar: { type: Number, default: 0 },
+      benifits: { type: Array },
     },
   ],
   points: { type: Number, default: 0 },

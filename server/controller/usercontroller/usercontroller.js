@@ -80,6 +80,7 @@ export async function GetUserDetails(req, res) {
     return res.status(404).json({ message: "User not found" });
   }
   const userdetails = {
+    id: user._id,
     name: user.name,
     email: user.email,
     phoneNumber: user.phoneNumber,

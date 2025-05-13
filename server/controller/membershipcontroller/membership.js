@@ -161,6 +161,8 @@ export async function purchasepackages(req, res) {
     user.membershipPackage.push({
       packagename: packageData.name,
       activatedate: new Date(),
+      pointsPerDollar: packageData.pointsPerDollar,
+      benifits: packageData.benefits,
       status: "active",
     });
 
@@ -261,6 +263,7 @@ export async function addMembershipPackage(req, res) {
       pointsPerDollar,
       description,
       category,
+      discount,
     } = req.body;
 
     if (!name || !monthlyCost || !pointsPerDollar) {
@@ -276,6 +279,7 @@ export async function addMembershipPackage(req, res) {
       pointsPerDollar,
       description,
       category,
+      discount,
     });
 
     await membershipPackage.save();

@@ -10,9 +10,17 @@ const initialState = {
   benefits: "",
   description: "",
   category: "",
+  discount: "", // Add discount field
 };
 
-const InputField = ({ label, name, value, onChange, type = "text" }) => (
+const InputField = ({
+  label,
+  name,
+  value,
+  onChange,
+  type = "text",
+  ...props
+}) => (
   <div>
     <label className="block mb-1 font-medium text-gray-700">{label}</label>
     <input
@@ -22,6 +30,7 @@ const InputField = ({ label, name, value, onChange, type = "text" }) => (
       onChange={onChange}
       className="w-full p-2 border rounded-lg"
       required
+      {...props}
     />
   </div>
 );
@@ -55,6 +64,7 @@ function AddPackageForm() {
       "benefits",
       "description",
       "category",
+      "discount", // Add discount validation
     ];
     const emptyFields = requiredFields.filter((key) => !formData[key]);
 
@@ -69,12 +79,21 @@ function AddPackageForm() {
     if (isNaN(formData.pointsPerDollar) || formData.pointsPerDollar <= 0) {
       throw new Error("Points Per Dollar must be a positive number");
     }
+
+    if (
+      isNaN(formData.discount) ||
+      formData.discount < 0 ||
+      formData.discount > 100
+    ) {
+      throw new Error("Discount must be between 0 and 100");
+    }
   };
 
   const buildPayload = () => ({
     ...formData,
     monthlyCost: parseFloat(formData.monthlyCost),
     pointsPerDollar: parseFloat(formData.pointsPerDollar),
+    discount: parseFloat(formData.discount),
     benefits: formData.benefits
       .split(",")
       .map((b) => b.trim())
@@ -134,6 +153,15 @@ function AddPackageForm() {
             value={formData.pointsPerDollar}
             onChange={handleChange}
             type="number"
+          />
+          <InputField
+            label="Discount (%)"
+            name="discount"
+            value={formData.discount}
+            onChange={handleChange}
+            type="number"
+            min="0"
+            max="100"
           />
           <TextAreaField
             label="Benefits (comma-separated)"
