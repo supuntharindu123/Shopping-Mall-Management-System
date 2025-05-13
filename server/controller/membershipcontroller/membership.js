@@ -4,78 +4,49 @@ import Transaction from "../../models/Transaction.js";
 import Reward from "../../models/Reward.js";
 import purchasepackage from "../../models/purchasepackage.js";
 import PDF from "pdfkit";
-
 export async function Purchasing(req, res) {
   try {
-    const { username, totalamount, category } = req.body;
-    let discount = 0,
-      amount = totalamount;
+    const {
+      userId,
+      shopId,
+      items,
+      totalAmount,
+      pointsEarned,
+      appliedDiscount,
+      discountAddedPackage,
+      finalTotal,
+    } = req.body;
 
-    const user = await User.findOne({ name: username });
-    const packagedetails = await Package.findOne({ category: category });
-
-    const checkpkg = user.membershipPackage.find(
-      (x) => x.packagename === packagedetails.name
-    );
-    console.log("packagedetails", checkpkg);
-
-    let points = user.points;
-
-    console.log(user);
-    if (checkpkg) {
-      if (checkpkg.packagename === "Foodie Delight" && category === "food") {
-        discount = totalamount * 0.1;
-        amount = totalamount - discount;
-        points += totalamount;
-      } else if (
-        checkpkg.packagename === "Fashionista" &&
-        category === "fashion"
-      ) {
-        discount = totalamount * 0.15;
-        amount = totalamount - discount;
-        points += totalamount * 2;
-      } else {
-        discount = 0;
-        amount = totalamount;
-      }
-    } else {
+    const user = await User.findById(userId);
+    if (!user) {
       return res.status(404).json({ message: "User not found" });
     }
-
-    const transaction = new Transaction({
-      username,
-      totalamount,
-      discount,
-      amount,
-      category,
-    });
-    await transaction.save();
-
-    user.purchaseHistory.push({
-      transactionId: transaction._id,
-      amount,
-      category,
-    });
-
-    const membershipPackage = await Package.findOne({
-      name: user.membershipPackage,
+    const order = new Transaction({
+      userId: userId,
+      shopId,
+      items: items.map((item) => ({
+        itemId: item.itemId,
+        quantity: item.quantity,
+        price: item.price,
+      })),
+      totalAmount,
+      pointsEarned,
+      appliedDiscount: appliedDiscount,
+      discountAddedPackage,
+      finalTotal,
     });
 
-    // Update user points if membership package exists
-    if (membershipPackage) {
-      user.points += amount * membershipPackage.pointsPerDollar;
-    }
+    await order.save();
 
-    user.points = points;
-    // Save updated user data
+    user.points += pointsEarned;
     await user.save();
 
-    res
+    return res
       .status(201)
-      .json({ message: "Purchase logged successfully", transaction });
+      .json({ message: "Order placed successfully", order });
   } catch (error) {
     console.error("Error in Purchasing function:", error);
-    res.status(500).json({ message: "Internal server error" });
+    return res.status(500).json({ message: "Internal server error" });
   }
 }
 
@@ -163,6 +134,8 @@ export async function purchasepackages(req, res) {
       activatedate: new Date(),
       pointsPerDollar: packageData.pointsPerDollar,
       benifits: packageData.benefits,
+      category: packageData.category,
+      discount: packageData.discount,
       status: "active",
     });
 

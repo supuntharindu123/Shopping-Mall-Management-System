@@ -2,6 +2,7 @@ import { Router } from "express";
 import multer from "multer";
 import path from "path";
 import {
+  GetUserById,
   GetUserDetails,
   LoginUser,
   RegisterUser,
@@ -64,6 +65,7 @@ const upload = multer({ storage });
 
 router.post("/register", RegisterUser);
 router.post("/login", LoginUser);
+router.get("/user/:id", GetUserById);
 router.post("/purchase", Purchasing);
 router.post("/rewards", Rewards);
 router.post("/addpkg", addMembershipPackage);

@@ -1,4 +1,6 @@
 import Shop from "../../models/Shop.js";
+import Transaction from "../../models/Transaction.js";
+import Item from "../../models/Item.js";
 import path from "path";
 import fs from "fs";
 
@@ -163,6 +165,7 @@ export async function DeleteShop(req, res) {
       return res.status(404).json({ message: "Shop not found" });
     }
 
+    // Delete shop image if it exists
     if (shop.imageFileName) {
       const imagePath = path.resolve("uploads", shop.imageFileName);
       try {
@@ -175,9 +178,18 @@ export async function DeleteShop(req, res) {
       }
     }
 
+    // Delete all items linked to the shop
+    await Item.deleteMany({ shopid: id });
+
+    // Delete all transactions linked to the shop
+    await Transaction.deleteMany({ shopId: id });
+
+    // Delete the shop itself
     await Shop.findByIdAndDelete(id);
 
-    res.json({ message: "Shop deleted successfully" });
+    res.json({
+      message: "Shop, its items, and transactions deleted successfully",
+    });
   } catch (error) {
     console.error("Error deleting shop:", error);
     res.status(500).json({

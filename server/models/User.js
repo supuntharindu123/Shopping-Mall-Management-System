@@ -13,6 +13,8 @@ const UserSchema = new mongoose.Schema({
       activatedate: { type: Date, default: Date.now },
       pointsPerDollar: { type: Number, default: 0 },
       benifits: { type: Array },
+      discount: { type: Number, require: false },
+      category: { type: String, require: false },
     },
   ],
   points: { type: Number, default: 0 },

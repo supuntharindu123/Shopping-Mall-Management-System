@@ -86,42 +86,35 @@ function Adminshop() {
             href="/membershipadmin"
             className="bg-teal-800 hover:bg-teal-700 px-4 py-2 rounded"
           >
-            Transaction
+            Memebership
           </a>
         </div>
       </div>
-      <h1 className="text-teal-900 text-4xl font-bold text-center mb-8">
-        Shop Management Dashboard
-      </h1>
 
-      <div className="flex justify-center items-center mb-6">
-        <nav className="space-x-4 bg-teal-900  py-3 mr-10">
-          <a
-            href="/shopdashboard"
-            className="text-white font-bold hover:bg-gray-800 transition duration-300 py-3 px-6"
+      <div className="flex justify-between items-center mb-6">
+        <h1 className="text-teal-900 text-4xl font-bold">
+          Shop Management Dashboard
+        </h1>
+        <a
+          href="/shopadd"
+          className="bg-teal-600 hover:bg-teal-700 text-white font-semibold px-6 py-2.5 rounded-lg transition duration-300 flex items-center gap-2"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            className="h-5 w-5"
+            viewBox="0 0 20 20"
+            fill="currentColor"
           >
-            Dashboard
-          </a>
-          <a
-            href="/shopadd"
-            className="text-white font-bold hover:bg-gray-800 transition duration-300 py-3 px-6"
-          >
-            Add Shops
-          </a>
-          <a
-            href="/parkingcategory"
-            className="text-white font-bold hover:bg-gray-800 transition duration-300 py-3 px-6"
-          >
-            Add Categories
-          </a>
-          <a
-            href="/availableparkingspots"
-            className="text-white font-bold hover:bg-gray-800 transition duration-300 py-3 px-6"
-          >
-            Available Spots
-          </a>
-        </nav>
+            <path
+              fillRule="evenodd"
+              d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z"
+              clipRule="evenodd"
+            />
+          </svg>
+          Add New Shop
+        </a>
       </div>
+
       <div className="mb-6 grid grid-cols-1 md:grid-cols-3 gap-4">
         <input
           type="text"

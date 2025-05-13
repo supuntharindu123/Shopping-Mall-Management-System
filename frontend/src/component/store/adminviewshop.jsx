@@ -139,7 +139,7 @@ function Adminviewshop() {
         });
         if (response.ok) {
           await Swal.fire("Deleted!", "Shop has been deleted.", "success");
-          navigate("/admin/shops");
+          navigate("/adminshop");
         } else {
           throw new Error("Failed to delete shop");
         }
@@ -197,6 +197,7 @@ function Adminviewshop() {
         setShop(updatedShop);
         setShowEditModal(false);
         Swal.fire("Success!", "Shop updated successfully", "success");
+        navigate(`/adminshop/${id}`);
       } else {
         throw new Error("Failed to update shop");
       }
@@ -434,68 +435,63 @@ function Adminviewshop() {
             Back to Shops
           </button>
 
-          <div className="relative">
-            <button
-              onClick={() => setShowMenu(!showMenu)}
-              className="p-2 rounded-full hover:bg-gray-100 transition-colors"
-              aria-label="More options"
+          <div className="flex items-center gap-4">
+            {/* Transaction Button */}
+            <a
+              href={`/shop/${id}/transactions`}
+              className="bg-teal-600 hover:bg-teal-700 text-white px-4 py-2 rounded-lg transition duration-300 flex items-center gap-2"
             >
-              <MoreVertical className="w-5 h-5 text-gray-600" />
-            </button>
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                className="h-5 w-5"
+                viewBox="0 0 20 20"
+                fill="currentColor"
+              >
+                <path d="M4 3a2 2 0 100 4h12a2 2 0 100-4H4z" />
+                <path
+                  fillRule="evenodd"
+                  d="M3 8h14v7a2 2 0 01-2 2H5a2 2 0 01-2-2V8zm5 3a1 1 0 011-1h2a1 1 0 110 2H9a1 1 0 01-1-1z"
+                  clipRule="evenodd"
+                />
+              </svg>
+              Transactions
+            </a>
 
-            {showMenu && (
-              <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-10">
-                <button
-                  onClick={() => {
-                    setShowEditModal(true);
-                    setShowMenu(false);
-                  }}
-                  className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 w-full text-left"
-                >
-                  <Edit className="w-4 h-4 mr-2" />
-                  Edit Shop
-                </button>
-                <button
-                  onClick={handleDelete}
-                  className="flex items-center px-4 py-2 text-sm text-red-600 hover:bg-gray-100 w-full text-left"
-                >
-                  <Trash2 className="w-4 h-4 mr-2" />
-                  Delete Shop
-                </button>
-              </div>
-            )}
+            {/* More Options Button */}
+            <div className="relative">
+              <button
+                onClick={() => setShowMenu(!showMenu)}
+                className="p-2 rounded-full hover:bg-gray-100 transition-colors"
+                aria-label="More options"
+              >
+                <MoreVertical className="w-5 h-5 text-gray-600" />
+              </button>
+
+              {showMenu && (
+                <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-10">
+                  <button
+                    onClick={() => {
+                      setShowEditModal(true);
+                      setShowMenu(false);
+                    }}
+                    className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 w-full text-left"
+                  >
+                    <Edit className="w-4 h-4 mr-2" />
+                    Edit Shop
+                  </button>
+                  <button
+                    onClick={handleDelete}
+                    className="flex items-center px-4 py-2 text-sm text-red-600 hover:bg-gray-100 w-full text-left"
+                  >
+                    <Trash2 className="w-4 h-4 mr-2" />
+                    Delete Shop
+                  </button>
+                </div>
+              )}
+            </div>
           </div>
         </div>
       </nav>
-
-      <div className="flex justify-center items-center mb-6 mt-6">
-        <nav className="space-x-4 bg-teal-900 py-3 mr-10">
-          <a
-            href="/shopdashboard"
-            className="text-white font-bold hover:bg-gray-800 transition duration-300 py-3 px-6"
-          >
-            Dashboard
-          </a>
-          <a
-            href="/shopadd"
-            className="text-white font-bold hover:bg-gray-800 transition duration-300 py-3 px-6"
-          >
-            Add Items
-          </a>
-          <a
-            href={`/shop/${id}/transactions`}
-            className="text-white font-bold hover:bg-gray-800 transition duration-300 py-3 px-6"
-          >
-            Transactions
-          </a>
-          <a
-            href="/availableparkingspots"
-            className="text-white font-bold hover:bg-gray-800 transition duration-300 py-3 px-6"
-          >
-            Available Spots
-          </a>
-        </nav>
-      </div>
 
       <div className="container mx-auto px-4 py-8">
         <div className="max-w-5xl mx-auto">

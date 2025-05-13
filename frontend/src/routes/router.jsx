@@ -43,6 +43,7 @@ import AllShops from "../component/store/shops";
 import Viewshop from "../component/store/viewshop";
 import Adminviewshop from "../component/store/adminviewshop";
 import Transaction from "../component/store/transaction";
+import TransactionHistory from "../component/store/TransactionHistory";
 // import Dashboard from "../component/store/Dashboard";
 // import Products from "../component/store/Products";
 // import AddProduct from "../component/store/AddProduct";
@@ -194,6 +195,10 @@ function App() {
     {
       path: "/shop/:id/transactions",
       element: <Transaction />,
+    },
+    {
+      path: "/transactionhistory",
+      element: <TransactionHistory />,
     },
   ];
   return (

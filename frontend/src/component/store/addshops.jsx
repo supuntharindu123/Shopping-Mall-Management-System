@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
+import Swal from "sweetalert2";
 
 function Addshops() {
   const navigate = useNavigate();
@@ -12,7 +13,6 @@ function Addshops() {
     description: "",
     openTime: "",
     closeTime: "",
-    // Add days of operation
     operatingDays: {
       monday: true,
       tuesday: true,
@@ -53,15 +53,67 @@ function Addshops() {
     }
   };
 
+  const handleRemoveImage = () => {
+    Swal.fire({
+      title: "Remove Image?",
+      text: "Are you sure you want to remove this image?",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#0D9488",
+      cancelButtonColor: "#DC2626",
+      confirmButtonText: "Yes, remove it!",
+    }).then((result) => {
+      if (result.isConfirmed) {
+        setShopImage(null);
+        setImagePreview(null);
+      }
+    });
+  };
+
+  const handleCancel = () => {
+    Swal.fire({
+      title: "Are you sure?",
+      text: "You will lose all entered data!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#0D9488",
+      cancelButtonColor: "#DC2626",
+      confirmButtonText: "Yes, cancel",
+      cancelButtonText: "No, keep editing",
+    }).then((result) => {
+      if (result.isConfirmed) {
+        navigate("/adminshop");
+      }
+    });
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    const requiredFields = [
+      "shopName",
+      "shopNumber",
+      "category",
+      "floor",
+      "openTime",
+      "closeTime",
+    ];
+    const emptyFields = requiredFields.filter((field) => !shopData[field]);
+
+    if (emptyFields.length > 0) {
+      Swal.fire({
+        icon: "error",
+        title: "Required Fields Empty",
+        text: `Please fill in: ${emptyFields.join(", ")}`,
+        confirmButtonColor: "#0D9488",
+      });
+      return;
+    }
+
     const formData = new FormData();
 
-    // Handle each field separately
     Object.keys(shopData).forEach((key) => {
       if (key === "operatingDays") {
-        // Convert operatingDays object to JSON string
         formData.append(key, JSON.stringify(shopData[key]));
       } else {
         formData.append(key, shopData[key]);
@@ -79,8 +131,13 @@ function Addshops() {
       });
 
       if (response.ok) {
-        alert("Shop added successfully!");
-        // Reset form
+        await Swal.fire({
+          icon: "success",
+          title: "Success!",
+          text: "Shop added successfully",
+          confirmButtonColor: "#0D9488",
+        });
+
         setShopData({
           shopName: "",
           shopNumber: "",
@@ -109,47 +166,29 @@ function Addshops() {
       }
     } catch (error) {
       console.error("Error:", error);
-      alert(error.message || "An error occurred while adding the shop.");
+      Swal.fire({
+        icon: "error",
+        title: "Error!",
+        text: error.message || "An error occurred while adding the shop",
+        confirmButtonColor: "#DC2626",
+      });
     }
   };
 
   return (
     <div>
+      <div className="flex justify-center items-center mb-6"></div>
+
       <h1 className="text-teal-900 text-4xl font-bold text-center mb-8 mt-8">
         Shop Management Dashboard
       </h1>
 
-      <div className="flex justify-center items-center mb-6">
-        <nav className="space-x-4 bg-teal-900 py-3 mr-10">
-          <a
-            href="/adminshop"
-            className="text-white font-bold hover:bg-gray-800 transition duration-300 py-3 px-6"
-          >
-            Dashboard
-          </a>
-          <a
-            href="/shopadd"
-            className="text-white font-bold hover:bg-gray-800 transition duration-300 py-3 px-6"
-          >
-            Add Shops
-          </a>
-          <a
-            href="/parkingcategory"
-            className="text-white font-bold hover:bg-gray-800 transition duration-300 py-3 px-6"
-          >
-            Add Categories
-          </a>
-          <a
-            href="/availableparkingspots"
-            className="text-white font-bold hover:bg-gray-800 transition duration-300 py-3 px-6"
-          >
-            Available Spots
-          </a>
-        </nav>
-      </div>
+      <div className="flex justify-center items-center mb-6"> </div>
 
       <div className="max-w-2xl mx-auto bg-white p-8 rounded-lg shadow-md my-6">
-        <h2 className="text-2xl font-bold text-teal-900 mb-6">Add New Shop</h2>
+        <h2 className="text-2xl font-bold text-teal-900 mb-6 text-center">
+          Add New Shop
+        </h2>
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="grid grid-cols-2 gap-4">
@@ -285,11 +324,8 @@ function Addshops() {
                     />
                     <button
                       type="button"
-                      onClick={() => {
-                        setShopImage(null);
-                        setImagePreview(null);
-                      }}
-                      className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center"
+                      onClick={handleRemoveImage}
+                      className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center hover:bg-red-600 transition-colors"
                     >
                       ×
                     </button>
@@ -299,12 +335,23 @@ function Addshops() {
             </div>
           </div>
 
-          <button
-            type="submit"
-            className="w-full bg-teal-900 text-white py-2 px-4 rounded hover:bg-teal-800 transition duration-300"
-          >
-            Add Shop
-          </button>
+          <div className="flex gap-4 mt-6">
+            <div className="flex-1 flex gap-4">
+              <button
+                type="button"
+                onClick={handleCancel}
+                className="flex-1 bg-gray-400 text-white py-2 px-4 rounded hover:bg-gray-700 transition duration-300"
+              >
+                Cancel
+              </button>
+              <button
+                type="submit"
+                className="flex-1 bg-teal-900 text-white py-2 px-4 rounded hover:bg-teal-800 transition duration-300"
+              >
+                Add Shop
+              </button>
+            </div>
+          </div>
         </form>
       </div>
     </div>
