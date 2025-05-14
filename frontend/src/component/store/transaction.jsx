@@ -23,6 +23,8 @@ const Transaction = () => {
   });
   const [shop, setShop] = useState(null);
   const [error, setError] = useState("");
+  const [userRewards, setUserRewards] = useState([]);
+  const [selectedReward, setSelectedReward] = useState(null);
 
   // Fetch available items for the shop
   useEffect(() => {
@@ -82,30 +84,38 @@ const Transaction = () => {
 
     setLoading((prev) => ({ ...prev, user: true }));
     try {
-      const response = await fetch(
-        `http://localhost:3001/api/details/${username.trim()}`
-      );
-      if (!response.ok) throw new Error("User not found");
+      // Add logging to debug the responses
+      console.log("Fetching user and rewards data...");
 
-      const data = await response.json();
-      setUserDetails(data);
+      const [userResponse, rewardsResponse] = await Promise.all([
+        fetch(`http://localhost:3001/api/details/${username.trim()}`),
+        fetch(`http://localhost:3001/api/rewards`),
+      ]);
+
+      if (!userResponse.ok) throw new Error("User not found");
+
+      const userData = await userResponse.json();
+      const rewardsData = await rewardsResponse.json();
+
+      // Add debug logging
+      console.log("User Data:", userData);
+      console.log("Rewards Data:", rewardsData);
+
+      setUserDetails(userData);
+      setUserRewards(rewardsData);
       setUserError("");
 
-      if (data.membershipPackage && data.membershipPackage.length > 0) {
-        setPkgDetails(data.membershipPackage);
+      if (userData.membershipPackage?.length > 0) {
+        setPkgDetails(userData.membershipPackage);
       } else {
         setPkgDetails([]);
       }
     } catch (err) {
+      console.error("Error in handleFetchUser:", err);
       setUserDetails(null);
       setUserError("User not found");
       setPkgDetails([]);
-      Swal.fire({
-        icon: "error",
-        title: "Error",
-        text: err.message,
-        confirmButtonColor: "#0D9488",
-      });
+      setUserRewards([]);
     } finally {
       setLoading((prev) => ({ ...prev, user: false }));
     }
@@ -192,6 +202,98 @@ const Transaction = () => {
     }, null);
   };
 
+  const getAvailableRewards = () => {
+    // Add debug logging
+    console.log("Getting available rewards:");
+    console.log("User Rewards:", userRewards);
+    console.log("Shop:", shop);
+    console.log("User Details:", userDetails);
+
+    if (!userRewards?.length || !shop || !userDetails) {
+      console.log("Missing required data for rewards");
+      return [];
+    }
+
+    const filteredRewards = userRewards.filter((reward) => {
+      const categoryMatches =
+        reward.category === shop.category || reward.category === "all";
+      console.log(
+        `Reward ${reward.name}: Category matches = ${categoryMatches}`
+      );
+      return categoryMatches;
+    });
+
+    console.log("Filtered rewards:", filteredRewards);
+    return filteredRewards;
+  };
+
+  const handleRewardRedeem = async (reward) => {
+    try {
+      // Add validation for shop data
+      if (!shop?.shopName) {
+        throw new Error("Shop details are missing");
+      }
+
+      const response = await fetch("http://localhost:3001/api/rewards/redeem", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          userId: userDetails.id,
+          username: userDetails.name,
+          rewardDetails: {
+            rewardId: reward._id,
+            rewardName: reward.name,
+            pointsRequired: reward.pointsRequired,
+            benefits: reward.benefits,
+            category: reward.category,
+          },
+          shopDetails: {
+            shopId: shop._id,
+            shopName: shop.shopName, // Fixed: Changed from shop.shopName to shop.name
+            category: shop.category,
+          },
+        }),
+      });
+
+      // Add debug logging
+      console.log("Shop details sent:", {
+        shopId: shop._id,
+        shopName: shop.name,
+        category: shop.category,
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        setUserDetails((prev) => ({
+          ...prev,
+          points: prev.points - reward.pointsRequired,
+        }));
+
+        await Swal.fire({
+          icon: "success",
+          title: "Reward Redeemed!",
+          text: `${reward.pointsRequired} points have been deducted at ${shop.name}`,
+          confirmButtonColor: "#0D9488",
+        });
+
+        handleFetchUser();
+      } else {
+        throw new Error(data.message || "Failed to redeem reward");
+      }
+    } catch (error) {
+      console.error("Error redeeming reward:", error);
+      Swal.fire({
+        icon: "error",
+        title: "Error",
+        text: error.message,
+        confirmButtonColor: "#0D9488",
+      });
+    }
+  };
+
   const handleConfirm = async () => {
     if (!userDetails) {
       Swal.fire({
@@ -203,11 +305,11 @@ const Transaction = () => {
       return;
     }
 
-    if (items.length === 0) {
+    if (!shop) {
       Swal.fire({
         icon: "error",
         title: "Error",
-        text: "Please add at least one item",
+        text: "Shop details not found",
         confirmButtonColor: "#0D9488",
       });
       return;
@@ -218,12 +320,13 @@ const Transaction = () => {
       const transactionData = {
         userId: userDetails.id,
         shopId: id,
+        shopName: shop.shopName,
         items: items.map((item) => ({
           itemId: item._id,
+          itemName: item.name,
           quantity: item.qty,
           price: item.price,
         })),
-
         totalAmount: getTotal(),
         pointsEarned: calculatePoints(),
         appliedDiscount: getTotal() - getDiscountedTotal(),
@@ -291,7 +394,6 @@ const Transaction = () => {
             </svg>
             Back to Shop
           </button>
-
           <div className="flex gap-4">
             <button
               onClick={() => navigate("/transactionhistory")}
@@ -302,6 +404,21 @@ const Transaction = () => {
           </div>
         </div>
       </nav>
+
+      {/* Add Shop Name Header */}
+      {shop && (
+        <div className="bg-teal-50 border border-teal-200 rounded-lg p-4 mb-6">
+          <h1 className="text-2xl font-bold text-teal-900 flex items-center justify-between">
+            <span>{shop.name}</span>
+            <span className="text-sm font-normal text-teal-700 bg-teal-100 px-3 py-1 rounded-full">
+              {shop.category}
+            </span>
+          </h1>
+          {shop.description && (
+            <p className="text-teal-700 mt-2">{shop.description}</p>
+          )}
+        </div>
+      )}
 
       {/* Main Content */}
       <div className="bg-white shadow-lg rounded-2xl p-6">
@@ -394,6 +511,128 @@ const Transaction = () => {
                     ))
                   ) : (
                     <p className="text-gray-500">No active memberships</p>
+                  )}
+                </div>
+                <div className="col-span-2">
+                  <h3 className="font-semibold text-lg text-teal-700 mb-2">
+                    Available Rewards {shop?.name ? `for ${shop.name}` : ""}
+                  </h3>
+
+                  {loading.user ? (
+                    <div className="flex justify-center py-4">
+                      <Loader2 className="w-6 h-6 animate-spin text-teal-600" />
+                    </div>
+                  ) : getAvailableRewards().length > 0 ? (
+                    <div className="grid gap-4 grid-cols-1 md:grid-cols-2">
+                      {getAvailableRewards().map((reward) => (
+                        <div
+                          key={reward._id}
+                          className={`p-4 border rounded-lg ${
+                            userDetails.points >= reward.pointsRequired
+                              ? "bg-teal-50 border-teal-200"
+                              : "bg-gray-50 border-gray-200"
+                          }`}
+                        >
+                          <div className="flex justify-between items-start">
+                            <div>
+                              <p
+                                className={`font-semibold ${
+                                  userDetails.points >= reward.pointsRequired
+                                    ? "text-teal-800"
+                                    : "text-gray-600"
+                                }`}
+                              >
+                                {reward.name}
+                              </p>
+                              <div className="flex items-center gap-2 mt-1">
+                                <span
+                                  className={`text-sm ${
+                                    userDetails.points >= reward.pointsRequired
+                                      ? "text-teal-600"
+                                      : "text-gray-500"
+                                  }`}
+                                >
+                                  {reward.pointsRequired} points required
+                                </span>
+                                {userDetails.points >=
+                                  reward.pointsRequired && (
+                                  <span className="bg-teal-100 text-teal-800 text-xs px-2 py-1 rounded-full">
+                                    Available
+                                  </span>
+                                )}
+                              </div>
+                            </div>
+                            <div className="flex flex-col items-end gap-1">
+                              <span className="text-xs bg-teal-100 text-teal-800 px-2 py-1 rounded-full">
+                                {reward.category}
+                              </span>
+                              {userDetails.points < reward.pointsRequired && (
+                                <span className="text-xs text-gray-500">
+                                  {reward.pointsRequired - userDetails.points}{" "}
+                                  more points needed
+                                </span>
+                              )}
+                            </div>
+                          </div>
+
+                          {/* Progress bar */}
+                          <div className="mt-2">
+                            <div className="w-full bg-gray-200 rounded-full h-2">
+                              <div
+                                className={`h-2 rounded-full transition-all duration-300 ${
+                                  userDetails.points >= reward.pointsRequired
+                                    ? "bg-teal-600"
+                                    : "bg-gray-400"
+                                }`}
+                                style={{
+                                  width: `${Math.min(
+                                    100,
+                                    (userDetails.points /
+                                      reward.pointsRequired) *
+                                      100
+                                  )}%`,
+                                }}
+                              />
+                            </div>
+                          </div>
+
+                          {reward.benefits && reward.benefits.length > 0 && (
+                            <div className="mt-2 text-sm text-gray-600">
+                              <div className="space-y-1">
+                                {reward.benefits.map((benefit, index) => (
+                                  <div
+                                    key={index}
+                                    className="flex items-start gap-2"
+                                  >
+                                    <span className="text-teal-500 mt-1">
+                                      •
+                                    </span>
+                                    <span>{benefit}</span>
+                                  </div>
+                                ))}
+                              </div>
+                            </div>
+                          )}
+
+                          {userDetails.points >= reward.pointsRequired && (
+                            <button
+                              onClick={() => handleRewardRedeem(reward)}
+                              className="mt-4 w-full bg-teal-600 text-white py-2 rounded-lg hover:bg-teal-700 transition-colors flex items-center justify-center gap-2"
+                            >
+                              Get Reward
+                            </button>
+                          )}
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <div className="text-center py-4 bg-gray-50 rounded-lg border border-gray-200">
+                      <p className="text-gray-500">
+                        {shop
+                          ? "No rewards available for this shop category"
+                          : "No rewards available"}
+                      </p>
+                    </div>
                   )}
                 </div>
               </div>

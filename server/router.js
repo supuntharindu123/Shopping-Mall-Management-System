@@ -22,6 +22,15 @@ import {
   updatePackage,
   removepkg,
   getAllPackages,
+  updateReward,
+  deleteReward,
+  getAllRewards,
+  getRewardById,
+  getTransactionsByUserId,
+  getRewardsByPackageName,
+  redeemReward,
+  getRewardRedemptionsByUserId,
+  getAllRedemptionHistory,
 } from "./controller/membershipcontroller/membership.js";
 import {
   addParkingCategory,
@@ -72,6 +81,9 @@ router.post("/addpkg", addMembershipPackage);
 router.get("/goal/:userId", Goals);
 router.get("/recommend/:userId", Reccommend);
 router.post("/addrewards", addReward);
+router.put("/rewards/:id", updateReward);
+router.delete("/rewards/:id", deleteReward);
+
 router.post("/purchasepackage", purchasepackages);
 router.get("/transactions", transactionsdetails);
 router.get("/details/:username", GetUserDetails);
@@ -81,6 +93,12 @@ router.get("/packages", getUserMembershipPackage);
 router.put("/packages/:id", updatePackage);
 router.delete("/packages/:id", removepkg);
 router.get("/pkg", getAllPackages);
+router.get("/transaction/:userId", getTransactionsByUserId);
+router.post("/rewards/redeem", redeemReward);
+router.get("/rewards/history/:userId", getRewardRedemptionsByUserId);
+router.get("/rewards/history", getAllRedemptionHistory);
+router.get("/rewards/:id", getRewardById);
+router.get("/rewards", getAllRewards);
 
 //parking
 // router.post("/parking", CreateParking);

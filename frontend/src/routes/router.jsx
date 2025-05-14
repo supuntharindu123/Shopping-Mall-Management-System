@@ -96,7 +96,7 @@ function App() {
       element: <AddRewardsForm />,
     },
     {
-      path: "/updaterewards",
+      path: "/updaterewards/:id",
       element: <UpdateRewardsForm />,
     },
     {

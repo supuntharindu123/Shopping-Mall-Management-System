@@ -2,6 +2,8 @@ import { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
 import Swal from "sweetalert2";
+// Import the ChevronLeft icon
+import { ChevronLeft } from "lucide-react";
 
 function UpdateMembershipPackage() {
   const { id } = useParams();
@@ -87,9 +89,39 @@ function UpdateMembershipPackage() {
     }
   };
 
+  // Add handleCancel function after handleSubmit
+  const handleCancel = () => {
+    Swal.fire({
+      title: "Cancel Update?",
+      text: "Your changes will not be saved!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#115e59",
+      cancelButtonColor: "#dc2626",
+      confirmButtonText: "Yes, cancel",
+      cancelButtonText: "No, keep editing",
+    }).then((result) => {
+      if (result.isConfirmed) {
+        navigate("/membershipadmin");
+      }
+    });
+  };
+
   return (
-    <div className="bg-gray-50 min-h-screen flex items-center justify-center p-6">
-      <div className="bg-white p-8 rounded-2xl shadow-lg w-full max-w-lg">
+    <div className="bg-gray-50 min-h-screen p-6">
+      {/* Back Navigation */}
+      <div className="max-w-5xl mx-auto mb-6">
+        <button
+          onClick={() => navigate("/membershipadmin")}
+          className="flex items-center text-gray-600 hover:text-teal-600 transition-colors"
+        >
+          <ChevronLeft className="w-5 h-5 mr-1" />
+          Back to Membership Management
+        </button>
+      </div>
+
+      {/* Form Container */}
+      <div className="bg-white p-8 rounded-2xl shadow-lg w-full max-w-lg mx-auto">
         <h2 className="text-teal-900 text-2xl font-bold mb-6 text-center">
           Update Package
         </h2>
@@ -166,12 +198,23 @@ function UpdateMembershipPackage() {
               <option value="all">All</option>
             </select>
           </div>
-          <button
-            type="submit"
-            className="w-full bg-teal-900 text-white p-3 rounded-lg hover:bg-gray-400 transition"
-          >
-            Update
-          </button>
+
+          {/* Update the buttons section */}
+          <div className="flex gap-4 mt-6">
+            <button
+              type="button"
+              onClick={handleCancel}
+              className="w-full py-3 px-4 rounded-lg  bg-gray-400 text-white hover:bg-gray-500 transition-colors"
+            >
+              Cancel
+            </button>
+            <button
+              type="submit"
+              className="w-full bg-teal-900 text-white py-3 rounded-lg hover:bg-teal-800 transition-colors"
+            >
+              Update Package
+            </button>
+          </div>
         </form>
       </div>
     </div>

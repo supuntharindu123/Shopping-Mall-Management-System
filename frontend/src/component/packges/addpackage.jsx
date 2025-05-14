@@ -1,7 +1,8 @@
 import React, { useState } from "react";
 import axios from "axios";
 import Swal from "sweetalert2";
-import { redirect } from "react-router-dom";
+import { redirect, useNavigate } from "react-router-dom";
+import { ChevronLeft } from "lucide-react";
 
 const initialState = {
   name: "",
@@ -50,6 +51,7 @@ const TextAreaField = ({ label, name, value, onChange }) => (
 );
 
 function AddPackageForm() {
+  const navigate = useNavigate();
   const [formData, setFormData] = useState(initialState);
 
   const handleChange = (e) => {
@@ -127,9 +129,38 @@ function AddPackageForm() {
     }
   };
 
+  const handleCancel = () => {
+    Swal.fire({
+      title: "Are you sure?",
+      text: "All entered data will be lost!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#115e59",
+      cancelButtonColor: "#dc2626",
+      confirmButtonText: "Yes, cancel",
+      cancelButtonText: "No, keep editing",
+    }).then((result) => {
+      if (result.isConfirmed) {
+        navigate("/membershipadmin");
+      }
+    });
+  };
+
   return (
-    <div className="bg-gray-100 min-h-screen flex items-center justify-center p-6">
-      <div className="bg-white p-8 rounded-xl shadow-md w-full max-w-lg">
+    <div className="bg-gray-100 min-h-screen p-6">
+      {/* Add Navigation */}
+      <div className="max-w-5xl mx-auto mb-6">
+        <button
+          onClick={() => navigate("/membershipadmin")}
+          className="flex items-start text-gray-600 hover:text-teal-600 transition-colors"
+        >
+          <ChevronLeft className="w-5 h-5 mr-1" />
+          Back to Membership Management
+        </button>
+      </div>
+
+      {/* Existing form container */}
+      <div className="bg-white p-8 rounded-xl shadow-md w-full max-w-lg mx-auto">
         <h2 className="text-2xl font-bold mb-6 text-center text-teal-800">
           Add Membership Package
         </h2>
@@ -194,12 +225,21 @@ function AddPackageForm() {
               <option value="all">All</option>
             </select>
           </div>
-          <button
-            type="submit"
-            className="w-full bg-teal-800 text-white py-3 rounded-lg hover:bg-teal-700 transition"
-          >
-            Submit Package
-          </button>
+          <div className="flex gap-4 mt-6">
+            <button
+              type="button"
+              onClick={handleCancel}
+              className="w-full py-3 px-4 rounded-lg  bg-gray-400 text-white hover:bg-gray-500 transition-colors"
+            >
+              Cancel
+            </button>
+            <button
+              type="submit"
+              className="w-full bg-teal-800 text-white py-3 rounded-lg hover:bg-teal-700 transition-colors"
+            >
+              Submit Package
+            </button>
+          </div>
         </form>
       </div>
     </div>

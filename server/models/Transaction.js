@@ -12,12 +12,17 @@ const OrderSchema = new mongoose.Schema({
     ref: "Shop",
     required: true,
   },
+  shopName: { type: String, require: true },
   items: [
     {
       itemId: {
         type: mongoose.Schema.Types.ObjectId,
         ref: "Item",
         required: true,
+      },
+      itemName: {
+        type: String,
+        require: true,
       },
       quantity: {
         type: Number,
