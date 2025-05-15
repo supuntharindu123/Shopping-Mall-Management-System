@@ -51,6 +51,26 @@ const MembershipAdmin = () => {
     fetchData();
   }, []);
 
+  const downloadReport = async () => {
+    try {
+      const res = await axios.get("http://localhost:3001/api/package/report", {
+        responseType: "blob",
+      });
+
+      const blob = new Blob([res.data], { type: "application/pdf" });
+      const url = window.URL.createObjectURL(blob);
+
+      const link = document.createElement("a");
+      link.href = url;
+      link.setAttribute("download", "membership_report.pdf");
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+    } catch (err) {
+      console.error("Download error", err);
+    }
+  };
+
   const removepkg = async (id) => {
     try {
       const result = await Swal.fire({
@@ -239,7 +259,7 @@ const MembershipAdmin = () => {
           </div>
           <div className="mt-4 md:mt-0">
             <button
-              onClick={handleGenerateReport}
+              onClick={downloadReport}
               className="bg-teal-600 hover:bg-teal-700 text-white px-4 py-2 rounded-lg shadow-md transition-all duration-300 transform hover:scale-105"
             >
               Generate Report

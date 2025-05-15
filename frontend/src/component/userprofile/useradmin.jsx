@@ -84,22 +84,39 @@ const AdminDashboard = () => {
           <h2 className="text-teal-900 text-2xl font-bold mb-4">
             User Management
           </h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {users.map((user) => (
               <div
                 key={user.id}
-                className="bg-gray-50 p-4 border rounded-lg shadow-md hover:shadow-lg cursor-pointer"
-                onClick={() => handleSelectUser(user)}
+                className="bg-gray-50 p-5 border border-gray-200 rounded-lg shadow-sm hover:shadow-md transition-shadow duration-200"
               >
-                <h3 className="text-teal-900 font-semibold">{user.fullName}</h3>
-                <p className="text-gray-600">{user.username}</p>
-                <p className="text-gray-400">{user.email}</p>
-                <button
-                  onClick={() => handleDeleteUser(user.id)}
-                  className="text-red-600 mt-2 hover:text-red-800"
-                >
-                  Delete
-                </button>
+                <div className="mb-3">
+                  <h3 className="text-teal-900 font-semibold text-lg">
+                    {user.fullName}
+                  </h3>
+                  <p className="text-gray-600 text-sm">{user.username}</p>
+                  <p className="text-gray-400 text-sm">{user.email}</p>
+                </div>
+                <div className="flex justify-between items-center">
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleEditUser(user);
+                    }}
+                    className="text-teal-600 hover:text-teal-800 font-medium text-sm px-3 py-1 rounded hover:bg-teal-50 transition-colors"
+                  >
+                    Edit
+                  </button>
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleDeleteUser(user.id);
+                    }}
+                    className="text-red-600 hover:text-red-800 font-medium text-sm px-3 py-1 rounded hover:bg-red-50 transition-colors"
+                  >
+                    Delete
+                  </button>
+                </div>
               </div>
             ))}
           </div>

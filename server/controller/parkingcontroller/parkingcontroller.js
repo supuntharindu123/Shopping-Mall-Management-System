@@ -2,6 +2,8 @@ import Parking from "../../models/parking.js";
 import Booking from "../../models/booking.js";
 import fs from "fs";
 import path from "path";
+import mongoose from "mongoose";
+import PDFDocument from "pdfkit";
 
 import ParkingCategory from "../../models/ParkingCategory.js";
 
@@ -58,18 +60,31 @@ export async function ParkingBook(req, res) {
       vehicleType,
       arrivalTime,
       departureTime,
-
-      status,
+      netAmount,
     } = req.body;
 
+    // Validate required fields
+    if (
+      !fullName ||
+      !licensePlate ||
+      !parkingSpot ||
+      !vehicleType ||
+      !arrivalTime ||
+      !departureTime
+    ) {
+      return res.status(400).json({
+        success: false,
+        title: "Booking Failed",
+        message: "All fields are required",
+        icon: "error",
+      });
+    }
+
     // Check for overlapping bookings first
-    const overlappingBookings = await Parking.find({
+    const overlappingBookings = await Booking.find({
       parkingSpot,
+      status: { $ne: "cancelled" }, // Exclude cancelled bookings
       $or: [
-        {
-          arrivalTime: { $lt: departureTime },
-          departureTime: { $gt: arrivalTime },
-        },
         {
           arrivalTime: { $lt: departureTime },
           departureTime: { $gt: arrivalTime },
@@ -79,13 +94,14 @@ export async function ParkingBook(req, res) {
 
     if (overlappingBookings.length > 0) {
       return res.status(400).json({
+        success: false,
         title: "Booking Failed",
         message: "This time slot is already taken. Please choose another time.",
         icon: "error",
       });
     }
 
-    const newParking = new Booking({
+    const newBooking = new Booking({
       fullName,
       licensePlate,
       parkingSpot,
@@ -93,20 +109,22 @@ export async function ParkingBook(req, res) {
       arrivalTime,
       departureTime,
       netAmount,
-      status,
+      status: "pending", // Set default status
     });
 
-    await newParking.save();
-    res.status(200).json({
+    await newBooking.save();
+
+    res.status(201).json({
       success: true,
       title: "Booking Successful!",
       message: `Your parking spot has been booked for ${new Date(
         arrivalTime
       ).toLocaleString()}`,
       icon: "success",
-      booking: newParking,
+      booking: newBooking,
     });
   } catch (error) {
+    console.error("Error creating booking:", error);
     res.status(500).json({
       success: false,
       title: "Booking Failed",
@@ -289,3 +307,186 @@ export async function deleteParking(req, res) {
     res.status(500).json({ message: "Error deleting parking", error });
   }
 }
+
+// Get all parking bookings
+export async function getAllParkingBookings(req, res) {
+  try {
+    const bookings = await Booking.find()
+      .sort({ createdAt: -1 })
+      .select("-__v");
+
+    if (!bookings) {
+      return res.status(404).json({
+        success: false,
+        message: "No bookings found",
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      count: bookings.length,
+      bookings,
+    });
+  } catch (error) {
+    console.error("Error fetching bookings:", error);
+    res.status(500).json({
+      success: false,
+      message: "Error fetching parking bookings",
+      error: error.message,
+    });
+  }
+}
+
+// Update booking status
+export async function updateBookingStatus(req, res) {
+  try {
+    const { bookingId } = req.params;
+    const { status } = req.body;
+
+    // Validate status
+    const validStatuses = ["pending", "approved", "cancelled"];
+    if (!validStatuses.includes(status)) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid status value",
+      });
+    }
+
+    // Validate bookingId format
+    if (!mongoose.Types.ObjectId.isValid(bookingId)) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid booking ID format",
+      });
+    }
+
+    // Find and update the booking
+    const booking = await Booking.findByIdAndUpdate(
+      bookingId,
+      { status },
+      { new: true, runValidators: true }
+    );
+
+    if (!booking) {
+      return res.status(404).json({
+        success: false,
+        message: "Booking not found",
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      message: "Booking status updated successfully",
+      booking,
+    });
+  } catch (error) {
+    console.error("Error updating booking status:", error);
+    res.status(500).json({
+      success: false,
+      message: "Error updating booking status",
+      error: error.message,
+    });
+  }
+}
+
+// Get bookings by username
+export async function getBookingsByUsername(req, res) {
+  try {
+    const { username } = req.params;
+
+    if (!username) {
+      return res.status(400).json({
+        success: false,
+        message: "Username is required",
+      });
+    }
+
+    const bookings = await Booking.find({ fullName: username })
+      .sort({ createdAt: -1 })
+      .select("-__v");
+
+    res.status(200).json({
+      success: true,
+      count: bookings.length,
+      bookings,
+    });
+  } catch (error) {
+    console.error("Error fetching bookings by username:", error);
+    res.status(500).json({
+      success: false,
+      message: "Error fetching bookings",
+      error: error.message,
+    });
+  }
+}
+
+// export async function parkingReport(req, res) {
+//   try {
+//     const bookings = await Booking.find().sort({ createdAt: -1 });
+
+//     if (!bookings.length) {
+//       return res.status(404).json({ message: "No bookings found." });
+//     }
+
+//     // Create a PDF document
+//     const doc = new PDFDocument({ margin: 30, size: "A4" });
+//     const filename = `Parking_Booking_Report_${Date.now()}.pdf`;
+
+//     // Set response headers to download the file
+//     res.setHeader("Content-Disposition", `attachment; filename="${filename}"`);
+//     res.setHeader("Content-Type", "application/pdf");
+
+//     // Pipe the PDF to the response
+//     doc.pipe(res);
+
+//     // Title
+//     doc.fontSize(20).text("Parking Booking Report", { align: "center" });
+//     doc.moveDown(1);
+
+//     // Table header
+//     doc
+//       .fontSize(12)
+//       .fillColor("#000")
+//       .text("No.", { continued: true, width: 40 })
+//       .text("Full Name", { continued: true, width: 120 })
+//       .text("License Plate", { continued: true, width: 100 })
+//       .text("Vehicle Type", { continued: true, width: 90 })
+//       .text("Parking Spot", { continued: true, width: 90 })
+//       .text("Arrival Time", { continued: true, width: 110 })
+//       .text("Departure Time", { continued: true, width: 110 })
+//       .text("Net Amount", { width: 70 });
+//     doc.moveDown(0.5);
+
+//     // Draw a line under header
+//     doc.moveTo(doc.x, doc.y).lineTo(550, doc.y).stroke();
+
+//     // List bookings
+//     bookings.forEach((b, i) => {
+//       doc
+//         .fontSize(10)
+//         .fillColor("#333")
+//         .text(i + 1, { continued: true, width: 40 })
+//         .text(b.fullName, { continued: true, width: 120 })
+//         .text(b.licensePlate, { continued: true, width: 100 })
+//         .text(b.vehicleType, { continued: true, width: 90 })
+//         .text(b.parkingSpot, { continued: true, width: 90 })
+//         .text(new Date(b.arrivalTime).toLocaleString(), {
+//           continued: true,
+//           width: 110,
+//         })
+//         .text(new Date(b.departureTime).toLocaleString(), {
+//           continued: true,
+//           width: 110,
+//         })
+//         .text(b.netAmount ? `$${b.netAmount.toFixed(2)}` : "N/A", {
+//           width: 70,
+//         });
+//       doc.moveDown(0.2);
+//     });
+
+//     doc.end();
+//   } catch (error) {
+//     console.error("Error generating report:", error);
+//     res.status(500).json({ error: "Failed to generate report" });
+//   }
+// }

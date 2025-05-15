@@ -7,7 +7,6 @@ const ParkingSchema = new mongoose.Schema(
     parkingSpot: {
       type: String,
       required: true,
-      enum: ["Basement Parking", "1st Floor Parking", "Backyard Parking"],
     },
     vehicleType: {
       type: String,
@@ -20,7 +19,7 @@ const ParkingSchema = new mongoose.Schema(
     status: {
       type: String,
       required: true,
-      enum: ["Pending", "Approved", "Cancelled"],
+      enum: ["pending", "approved", "cancelled"],
     },
     location: { type: String, required: false },
   },

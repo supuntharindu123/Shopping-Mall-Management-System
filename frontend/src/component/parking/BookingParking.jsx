@@ -2,6 +2,7 @@ import axios from "axios";
 import React, { useState, useEffect } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import Swal from "sweetalert2";
+import { ChevronLeft } from "lucide-react";
 
 function BookingPage() {
   const [searchParams] = useSearchParams();
@@ -76,6 +77,22 @@ function BookingPage() {
     setTimeError("");
   };
 
+  const handleCancel = () => {
+    Swal.fire({
+      title: "Are you sure?",
+      text: "You will lose all entered information!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#115e59",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Yes, cancel booking",
+    }).then((result) => {
+      if (result.isConfirmed) {
+        navigate("/parkingHome");
+      }
+    });
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -89,7 +106,15 @@ function BookingPage() {
       });
       return;
     }
-
+    console.log(
+      fullName,
+      licensePlate,
+      parkingSpot,
+      vehicleType,
+      arrivalTime,
+      departureTime,
+      netAmount
+    );
     try {
       const response = await fetch("http://localhost:3001/api/booking", {
         method: "POST",
@@ -104,7 +129,7 @@ function BookingPage() {
           arrivalTime,
           departureTime,
           netAmount,
-          status: "Pending",
+          status: "pending",
         }),
       });
 
@@ -146,7 +171,15 @@ function BookingPage() {
 
   return (
     <div className="flex items-center justify-center min-h-screen bg-gray-50 py-6">
-      <div className="bg-white p-6 rounded-2xl shadow-xl w-full max-w-md">
+      <div className="bg-white p-6 rounded-2xl shadow-xl w-full max-w-md relative">
+        <button
+          onClick={() => navigate(-1)}
+          className="absolute -top-12 left-0 text-teal-900 hover:text-teal-700 flex items-center gap-1 font-medium"
+        >
+          <ChevronLeft size={20} />
+          Back
+        </button>
+
         <h2 className="text-teal-900 text-2xl font-bold mb-4 text-center">
           Book & Pay for Parking
         </h2>
@@ -228,12 +261,21 @@ function BookingPage() {
             <div className="text-red-500 text-sm mt-1">{timeError}</div>
           )}
 
-          <button
-            type="submit"
-            className="w-full bg-teal-900 text-white py-2 rounded-lg hover:bg-gray-400 transition"
-          >
-            Confirm & Pay
-          </button>
+          <div className="flex gap-4 mt-6">
+            <button
+              type="button"
+              onClick={handleCancel}
+              className="w-full bg-red-600 text-white py-2 rounded-lg hover:bg-red-700 transition"
+            >
+              Cancel
+            </button>
+            <button
+              type="submit"
+              className="w-full bg-teal-900 text-white py-2 rounded-lg hover:bg-teal-800 transition"
+            >
+              Confirm & Pay
+            </button>
+          </div>
         </form>
       </div>
     </div>

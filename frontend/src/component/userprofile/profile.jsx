@@ -10,6 +10,8 @@ import {
   FiChevronUp,
   FiX,
 } from "react-icons/fi";
+// Add to existing imports
+
 import Swal from "sweetalert2";
 
 const DEFAULT_PROFILE_PHOTO =
@@ -32,6 +34,10 @@ const UserProfile = () => {
     return userData?.id || null;
   });
 
+  const [username] = useState(() => {
+    return userData?.username || null;
+  });
+
   const [user, setUser] = useState(null);
   const [activeTab, setActiveTab] = useState("profile");
   const [editMode, setEditMode] = useState(false);
@@ -45,6 +51,7 @@ const UserProfile = () => {
   const [expandedRows, setExpandedRows] = useState(new Set());
   const [rewardsHistory, setRewardsHistory] = useState([]);
   const [showRewardsHistory, setShowRewardsHistory] = useState(false);
+  const [parkingBookings, setParkingBookings] = useState([]);
 
   useEffect(() => {
     if (!userId) {
@@ -59,24 +66,26 @@ const UserProfile = () => {
     }
   }, [userId]);
 
-  console.log("userid", userId);
-
   useEffect(() => {
     const fetchUserData = async () => {
       if (!userId || !userData?.token) return;
 
       try {
-        const [userRes, transactionsRes, rewardsRes] = await Promise.all([
-          axios.get(`http://localhost:3001/api/user/${userId}`, {
-            headers: { Authorization: `Bearer ${userData.token}` },
-          }),
-          axios.get(`http://localhost:3001/api/transaction/${userId}`, {
-            headers: { Authorization: `Bearer ${userData.token}` },
-          }),
-          axios.get(`http://localhost:3001/api/rewards`, {
-            headers: { Authorization: `Bearer ${userData.token}` },
-          }),
-        ]);
+        const [userRes, transactionsRes, rewardsRes, parkingRes] =
+          await Promise.all([
+            axios.get(`http://localhost:3001/api/user/${userId}`, {
+              headers: { Authorization: `Bearer ${userData.token}` },
+            }),
+            axios.get(`http://localhost:3001/api/transaction/${userId}`, {
+              headers: { Authorization: `Bearer ${userData.token}` },
+            }),
+            axios.get(`http://localhost:3001/api/rewards`, {
+              headers: { Authorization: `Bearer ${userData.token}` },
+            }),
+            axios.get(`http://localhost:3001/api/booking/${username}`, {
+              headers: { Authorization: `Bearer ${userData.token}` },
+            }),
+          ]);
 
         const userInfo = userRes.data;
         const allRewards = rewardsRes.data;
@@ -86,6 +95,8 @@ const UserProfile = () => {
           recentTransactions: transactionsRes.data || [],
           allRewards: allRewards || [], // Add all rewards to user object
         });
+
+        setParkingBookings(parkingRes.data.bookings || []);
 
         setFormData({
           name: userInfo.name,
@@ -313,6 +324,16 @@ const UserProfile = () => {
               onClick={() => setActiveTab("rewards")}
             >
               <FiAward className="mr-2" /> Rewards
+            </button>
+            <button
+              className={`flex items-center px-6 py-3 font-medium ${
+                activeTab === "parking"
+                  ? "text-teal-900 border-b-2 border-teal-900"
+                  : "text-gray-600"
+              }`}
+              onClick={() => setActiveTab("parking")}
+            >
+              Parking
             </button>
           </div>
 
@@ -739,6 +760,88 @@ const UserProfile = () => {
                     </div>
                   </div>
                 )}
+              </div>
+            )}
+
+            {activeTab === "parking" && (
+              <div>
+                <h2 className="text-xl font-bold text-teal-900 mb-6">
+                  Parking History
+                </h2>
+                <div className="overflow-x-auto">
+                  <table className="min-w-full divide-y divide-gray-200">
+                    <thead className="bg-gray-50">
+                      <tr>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                          Booking Date
+                        </th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                          License Plate
+                        </th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                          Spot
+                        </th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                          Vehicle Type
+                        </th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                          Arrival
+                        </th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                          Departure
+                        </th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                          Status
+                        </th>
+                      </tr>
+                    </thead>
+                    <tbody className="bg-white divide-y divide-gray-200">
+                      {parkingBookings.map((booking) => (
+                        <tr key={booking._id} className="hover:bg-gray-50">
+                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                            {formatDate(booking.createdAt)}
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                            {booking.licensePlate}
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                            {booking.parkingSpot}
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                            {booking.vehicleType}
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                            {new Date(booking.arrivalTime).toLocaleString()}
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                            {new Date(booking.departureTime).toLocaleString()}
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap">
+                            <span
+                              className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full
+                  ${
+                    booking.status === "approved"
+                      ? "bg-green-100 text-green-800"
+                      : booking.status === "cancelled"
+                      ? "bg-red-100 text-red-800"
+                      : "bg-yellow-100 text-yellow-800"
+                  }`}
+                            >
+                              {booking.status}
+                            </span>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+
+                  {parkingBookings.length === 0 && (
+                    <div className="text-center py-8 text-gray-500">
+                      <FiCar className="mx-auto h-12 w-12 text-gray-400 mb-2" />
+                      <p>No parking bookings found</p>
+                    </div>
+                  )}
+                </div>
               </div>
             )}
           </div>

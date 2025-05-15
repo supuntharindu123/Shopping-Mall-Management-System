@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
 import { Loader2, Plus, Trash2 } from "lucide-react";
+import axios from "axios";
 
 const Transaction = () => {
   const { id } = useParams();
@@ -78,6 +79,31 @@ const Transaction = () => {
 
     fetchShopDetails();
   }, [id]);
+
+  const downloadReportByShop = async (shopId) => {
+    try {
+      const res = await axios.get(
+        `http://localhost:3001/api/transaction/report/${id}`,
+        {
+          responseType: "blob",
+        }
+      );
+
+      const blob = new Blob([res.data], { type: "application/pdf" });
+      const url = window.URL.createObjectURL(blob);
+
+      const link = document.createElement("a");
+      link.href = url;
+      link.setAttribute("download", `order_report_${shopId}.pdf`);
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+    } catch (err) {
+      console.error("Error downloading report:", err);
+    }
+  };
+
+  // Example usage
 
   const handleFetchUser = async () => {
     if (!username.trim()) return;
@@ -395,6 +421,12 @@ const Transaction = () => {
             Back to Shop
           </button>
           <div className="flex gap-4">
+            <button
+              onClick={downloadReportByShop}
+              className="bg-teal-600 hover:bg-teal-700 text-white px-4 py-2 rounded-lg transition flex items-center gap-2"
+            >
+              Transaction Report
+            </button>
             <button
               onClick={() => navigate("/transactionhistory")}
               className="bg-teal-600 hover:bg-teal-700 text-white px-4 py-2 rounded-lg transition flex items-center gap-2"

@@ -2,6 +2,7 @@ import Shop from "../../models/Shop.js";
 import Transaction from "../../models/Transaction.js";
 import Item from "../../models/Item.js";
 import path from "path";
+import PDFDocument from "pdfkit";
 import fs from "fs";
 
 export async function Addshops(req, res) {
@@ -196,5 +197,55 @@ export async function DeleteShop(req, res) {
       message: "Server error",
       error: error.message,
     });
+  }
+}
+
+export async function transactionreport(req, res) {
+  try {
+    const { shopId } = req.params;
+
+    const orders = await Transaction.find({ shopId });
+
+    if (!orders.length) {
+      return res.status(404).json({ error: "No orders found for this shop." });
+    }
+
+    const doc = new PDFDocument();
+    const filename = `Order_Report_Shop_${shopId}_${Date.now()}.pdf`;
+
+    res.setHeader("Content-Disposition", `attachment; filename="${filename}"`);
+    res.setHeader("Content-Type", "application/pdf");
+
+    doc.pipe(res);
+
+    doc
+      .fontSize(20)
+      .text(`Order Report - Shop ID: ${shopId}`, { align: "center" });
+    doc.moveDown();
+
+    orders.forEach((order, i) => {
+      doc.fontSize(14).text(`${i + 1}. Shop: ${order.shopName}`);
+      doc
+        .fontSize(12)
+        .text(`Order Date: ${new Date(order.createdAt).toLocaleString()}`);
+      doc.text(`Total Amount: $${order.totalAmount}`);
+      doc.text(`Applied Discount: $${order.appliedDiscount}`);
+      doc.text(`Points Earned: ${order.pointsEarned}`);
+      doc.text(`Final Total: $${order.finalTotal}`);
+      if (order.discountAddedPackage)
+        doc.text(`Discount Package: ${order.discountAddedPackage}`);
+
+      doc.text("Items:");
+      order.items.forEach((item) => {
+        doc.text(` - ${item.itemName}: ${item.quantity} x $${item.price}`);
+      });
+
+      doc.moveDown();
+    });
+
+    doc.end();
+  } catch (err) {
+    console.error("Error generating PDF report:", err);
+    res.status(500).json({ error: "Failed to generate order report" });
   }
 }

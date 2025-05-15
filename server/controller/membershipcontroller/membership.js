@@ -4,7 +4,7 @@ import Transaction from "../../models/Transaction.js";
 import Reward from "../../models/Reward.js";
 import purchasepackage from "../../models/purchasepackage.js";
 import Shop from "../../models/Shop.js";
-import PDF from "pdfkit";
+import PDFDocument from "pdfkit";
 import ParkingCategory from "../../models/ParkingCategory.js";
 import mongoose from "mongoose";
 import RewardRedemption from "../../models/RewardRedemption.js";
@@ -770,5 +770,48 @@ export async function getAllRedemptionHistory(req, res) {
       message: "Failed to fetch reward redemptions",
       error: error.message,
     });
+  }
+}
+
+export async function packagereport(req, res) {
+  try {
+    const packages = await Package.find();
+
+    const doc = new PDFDocument();
+    const filename = `Membership_Report_${Date.now()}.pdf`;
+
+    res.setHeader("Content-disposition", `attachment; filename=${filename}`);
+    res.setHeader("Content-type", "application/pdf");
+
+    doc.pipe(res);
+
+    doc.fontSize(20).text("Membership Package Report", { align: "center" });
+    doc.moveDown();
+
+    packages.forEach((pkg, index) => {
+      doc.fontSize(14).text(`${index + 1}. ${pkg.name} (${pkg.category})`, {
+        underline: true,
+      });
+      doc.fontSize(12).text(`Monthly Cost: $${pkg.monthlyCost}`);
+      doc.text(`Points Per Dollar: ${pkg.pointsPerDollar}`);
+      doc.text(`Discount: ${pkg.discount ?? "N/A"}`);
+      doc.text(`Description: ${pkg.description ?? "No description"}`);
+      doc.text("Benefits:");
+      pkg.benefits.forEach((b, i) => doc.text(`  - ${b}`));
+      doc.text("Rewards:");
+      pkg.rewards.forEach((r) => {
+        doc.text(
+          `  • ${r.rewardname || "Unnamed Reward"} - Points: ${
+            r.pointsRequired ?? 0
+          } | Active: ${r.isActive ? "Yes" : "No"}`
+        );
+      });
+      doc.moveDown();
+    });
+
+    doc.end();
+  } catch (err) {
+    console.error("Error generating PDF:", err);
+    res.status(500).json({ error: "Failed to generate report" });
   }
 }

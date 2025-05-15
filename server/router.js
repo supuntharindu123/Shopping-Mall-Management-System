@@ -31,14 +31,18 @@ import {
   redeemReward,
   getRewardRedemptionsByUserId,
   getAllRedemptionHistory,
+  packagereport,
 } from "./controller/membershipcontroller/membership.js";
 import {
   addParkingCategory,
   checkAvailability,
   deletecategory,
   getallcategory,
+  getAllParkingBookings,
+  getBookingsByUsername,
   getcategorybyid,
   ParkingBook,
+  updateBookingStatus,
   updatecategory,
 } from "./controller/parkingcontroller/parkingcontroller.js";
 import {
@@ -46,6 +50,7 @@ import {
   DeleteShop,
   GetShopById,
   GetShops,
+  transactionreport,
   UpdateShop,
 } from "./controller/shopcontroller/shopcontroller.js";
 import {
@@ -105,6 +110,7 @@ router.get("/rewards", getAllRewards);
 // router.get("/parkings", getAllParking);
 // router.delete("/parkings/:id", deleteParking);
 router.post("/booking", ParkingBook);
+router.get("/getbooking", getAllParkingBookings);
 router.get("/check-availability", checkAvailability);
 // router.post("/addparking", addParking);
 router.post("/parkingcategory", upload.single("image"), addParkingCategory);
@@ -112,6 +118,10 @@ router.get("/parkingcategory", getallcategory);
 router.put("/parkingcategory/:id", upload.single("image"), updatecategory);
 router.delete("/parkingcategory/:id", deletecategory);
 router.get("/parkingcategory/:id", getcategorybyid);
+router.patch("/booking/:bookingId", updateBookingStatus);
+router.get("/booking/:username", getBookingsByUsername);
+router.get("/package/report", packagereport);
+// router.get("/booking/report", parkingReport);
 
 //shop
 router.post("/addshop", upload.single("image"), Addshops);
@@ -124,5 +134,6 @@ router.post("/shop/:shopId/items", upload.single("image"), addItem);
 router.put("/items/:id", upload.single("image"), updateItem);
 router.delete("/items/:id", deleteItem);
 router.get("/items/:id", getItemById);
+router.get("/transaction/report/:shopId", transactionreport);
 
 export default router;

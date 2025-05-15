@@ -123,29 +123,12 @@ const ParkingCategory = () => {
           >
             Dashboard
           </a>
-          <a
-            href="/parkingadd"
-            className="text-white font-bold hover:bg-gray-800 transition duration-300 py-3 px-6"
-          >
-            Add Parking
-          </a>
+
           <a
             href="/parkingcategory"
             className="text-white font-bold hover:bg-gray-800 transition duration-300 py-3 px-6"
           >
             Add Categories
-          </a>
-          <a
-            href="/availableparkingspots"
-            className="text-white font-bold hover:bg-gray-800 transition duration-300 py-3 px-6"
-          >
-            Available Spots
-          </a>
-          <a
-            href="/reserveparkingspots"
-            className="text-white font-bold hover:bg-gray-800 transition duration-300 py-3 px-6"
-          >
-            Reserve Spots
           </a>
         </nav>
       </div>

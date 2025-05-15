@@ -1,7 +1,10 @@
 import React from "react";
-import Mall from "../../assets/Mall01.jpg";
-import MallImg from "../../assets/Mall02.jpg";
-import MallImgs from "../../assets/Mall03.jpg";
+import Mall from "../../assets/Mall05.jpg";
+import MallImg from "../../assets/Mall06.jpg";
+import MallImgs from "../../assets/Mall07.jpg";
+import MallImgss from "../../assets/Mall08.jpg";
+import MallImages from "../../assets/Mall09.jpg";
+import MallImagess from "../../assets/Mall10.png";
 
 import Back from "../../assets/background.jpg";
 import Logo from "../../assets/CA01.jpg";
@@ -37,7 +40,7 @@ const HomePage = () => {
           exit={{ opacity: 0 }}
           transition={{ duration: 0.8 }}
         />
-        <div className=" absolute  left-1/2 transform -translate-x-1/2 translate-y-1 bg-gray-500 bg-opacity-100 px-10 py-10 rounded-lg text-center text-white max-w-4xl">
+        <div className=" absolute  left-1/2 transform -translate-x-1/2 translate-y-1 bg-teal-700 bg-opacity-50 px-10 py-10 rounded-lg text-center text-white max-w-4xl">
           <div className="flex items-center flex-col">
             <img src={Logo} alt="logo" width={120} />
           </div>
@@ -50,7 +53,7 @@ const HomePage = () => {
       </motion.div>
       <main className="bg-gray-50">
         {/* Features Section */}
-        <section id="categories" className="py-30 bg-white text-center">
+        <section id="categories" className="py-20 bg-gray-300 text-center">
           <h2 className="text-4xl font-extrabold text-teal-900 drop-shadow-md">
             Explore Our Categories
           </h2>
@@ -59,24 +62,24 @@ const HomePage = () => {
               {
                 title: "Food",
                 description: "Fresh and delicious food items for all tastes.",
-                image: `${Mall}`,
+                image: `${MallImg}`,
               },
               {
                 title: "Entertainment",
                 description: "Find a wide range of fun and leisure activities.",
-                image: `${Mall}`,
+                image: `${MallImgss}`,
               },
               {
                 title: "Fashion",
                 description:
                   "Explore the latest trends in clothing and accessories.",
-                image: `${Mall}`,
+                image: `${MallImagess}`,
               },
               {
                 title: "Lifestyle",
                 description:
                   "Enhance your daily living with quality lifestyle products.",
-                image: `${Mall}`,
+                image: `${MallImages}`,
               },
             ].map((category, index) => (
               <div
@@ -97,7 +100,7 @@ const HomePage = () => {
                     {category.description}
                   </p>
                   <a
-                    href="#"
+                    href="/shops"
                     className="inline-block text-teal-600 hover:text-teal-800 font-semibold transition duration-300"
                   >
                     Discover More
@@ -110,19 +113,19 @@ const HomePage = () => {
 
         <section
           id="about"
-          className="py-30 text-center bg-cover bg-center"
-          style={{ backgroundImage: `url(${MallImg})` }}
+          className="py-10 text-center bg-cover bg-center bg-white"
+          // style={{ backgroundImage: `url(${Mall})` }}
         >
-          <div className="bg-gray-50 py-10">
+          <div className="block bg-gray-50 py-10">
             <h2 className="text-3xl font-semibold text-teal-900 drop-shadow-md">
               Become a Member
             </h2>
-            <p className="mt-4 text-lg text-gray-700 max-w-3xl mx-auto">
+            <p className="block mt-4 text-lg text-gray-700 max-w-3xl mx-auto">
               Our system provides an efficient way to manage malls, stores, and
               services. We aim to streamline operations and improve the overall
               experience for tenants and customers alike.
             </p>
-            <p className="mt-4 text-lg text-gray-700 max-w-3xl mx-auto">
+            <p className="block mt-4 text-lg text-gray-700 max-w-3xl mx-auto">
               As a valued customer, you can purchase a shopping complex
               membership to gain access to our exclusive Purchase Achievement
               Program. Set personalized spending goals, earn exciting rewards,
@@ -130,14 +133,14 @@ const HomePage = () => {
               priority services, and unlock special benefits as you reach your
               purchase milestones.
             </p>
-            <p className="mt-4 text-lg text-gray-700 max-w-3xl mx-auto">
+            <p className="block mt-4 text-lg text-gray-700 max-w-3xl mx-auto mb-8">
               Our AI-powered system tailors personalized targets based on your
               past shopping behavior, ensuring a customized and rewarding
               experience every time you shop.
             </p>
             <a
               href="/payment"
-              className="mt-20 px-6 py-3 bg-teal-900 text-white font-semibold text-lg rounded-lg shadow-md hover:bg-teal-700 transition duration-300"
+              className="  px-6 py-3 bg-teal-900 text-white font-semibold text-lg rounded-lg shadow-md hover:bg-teal-700 transition duration-300"
             >
               Join Now
             </a>
@@ -148,12 +151,12 @@ const HomePage = () => {
           id="about"
           className="py-30 bg-gray-200 text-center"
           style={{
-            backgroundImage: `url(${MallImgs})`,
+            backgroundImage: `url(${Mall})`,
             backgroundSize: "cover",
             backgroundPosition: "center",
           }}
         >
-          <div className="bg-gray-50 py-10">
+          <div className=" py-10 bg-gray-300">
             <h2 className="text-3xl font-bold text-teal-900 drop-shadow-md">
               About Us
             </h2>
@@ -191,7 +194,7 @@ const HomePage = () => {
           </h2>
 
           {/* Background overlay */}
-          <div className="absolute inset-0 bg-gray-100 opacity-30 z-0"></div>
+          <div className="absolute inset-0 bg-gray-500   opacity-30 z-0"></div>
 
           <div className="relative z-10 mt-8 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-12 px-6">
             {[
