@@ -1,11 +1,15 @@
 import { Router } from "express";
 import multer from "multer";
 import path from "path";
+import { authenticateToken } from "./middleware/auth.js";
 import {
+  DeleteUser,
+  GetAllUsers,
   GetUserById,
   GetUserDetails,
   LoginUser,
   RegisterUser,
+  UpdateUser,
 } from "./controller/usercontroller/usercontroller.js";
 import {
   addMembershipPackage,
@@ -104,6 +108,12 @@ router.get("/rewards/history/:userId", getRewardRedemptionsByUserId);
 router.get("/rewards/history", getAllRedemptionHistory);
 router.get("/rewards/:id", getRewardById);
 router.get("/rewards", getAllRewards);
+
+//user
+
+router.get("/users", GetAllUsers);
+router.put("/users/:id", UpdateUser);
+router.delete("/users/:id", DeleteUser);
 
 //parking
 // router.post("/parking", CreateParking);
