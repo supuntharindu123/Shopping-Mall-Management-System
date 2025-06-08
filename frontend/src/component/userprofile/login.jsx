@@ -1,27 +1,54 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import Swal from "sweetalert2";
 
 export default function LoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+  const navigate = useNavigate();
 
   const handleLogin = async (e) => {
     e.preventDefault();
     setError("");
 
     try {
-      const response = await fetch("http://localhost:5000/api/login", {
+      const response = await fetch("http://localhost:3001/api/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password }),
       });
-      console.log(`hello`);
 
       const data = await response.json();
       if (response.ok) {
-        alert("Login successful");
-        // Save token to local storage (if needed)
-        // localStorage.setItem("token", data.token);
+        // Store user data
+        localStorage.setItem(
+          "user",
+          JSON.stringify({
+            token: data.token,
+            role: data.role,
+            username: data.username,
+            id: data.id,
+          })
+        );
+
+        // Success message
+        Swal.fire({
+          icon: "success",
+          title: "Login Successful",
+          text: `Welcome back, ${data.username}!`,
+          timer: 1500,
+        });
+
+        // Role-based navigation
+        switch (data.role) {
+          case "admin":
+            navigate("/admin");
+            break;
+          default:
+            navigate("/");
+            break;
+        }
       } else {
         setError(data.message || "Invalid credentials");
       }
@@ -68,8 +95,11 @@ export default function LoginPage() {
           </button>
           <p className="text-center text-teal-900">
             Don't have an account?{" "}
-            <a href="/register" className="text-gray-400 hover:underline">
-              Sign Up
+            <a
+              href="/register"
+              className="text-teal-900 hover:underline font-medium"
+            >
+              Register
             </a>
           </p>
         </form>

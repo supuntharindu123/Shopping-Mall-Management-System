@@ -77,14 +77,14 @@ const ContactUs = () => {
                   aria-required="true"
                   value={formData.name}
                   onChange={handleChange}
-                  className={`mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-teal-900 focus:ring-teal-900 sm:text-sm ${
+                  className={` py-2 mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-teal-900 focus:ring-teal-900 sm:text-sm ${
                     formErrors.name ? "border-red-500" : ""
                   }`}
                   placeholder="Your Name"
                   aria-label="Your Name"
                 />
                 {formErrors.name && (
-                  <p className="text-red-500 text-xs mt-1">{formErrors.name}</p>
+                  <p className="text-red-500 text-lg mt-1">{formErrors.name}</p>
                 )}
               </div>
 
@@ -104,14 +104,14 @@ const ContactUs = () => {
                   aria-required="true"
                   value={formData.email}
                   onChange={handleChange}
-                  className={`mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-teal-900 focus:ring-teal-900 sm:text-sm ${
+                  className={`py-2 mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-teal-900 focus:ring-teal-900 sm:text-sm ${
                     formErrors.email ? "border-red-500" : ""
                   }`}
                   placeholder="your.email@example.com"
                   aria-label="Your Email"
                 />
                 {formErrors.email && (
-                  <p className="text-red-500 text-xs mt-1">
+                  <p className="text-red-500 text-lg mt-1">
                     {formErrors.email}
                   </p>
                 )}
@@ -134,14 +134,14 @@ const ContactUs = () => {
                 aria-required="true"
                 value={formData.message}
                 onChange={handleChange}
-                className={`mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-teal-900 focus:ring-teal-900 sm:text-sm ${
+                className={`py-2 mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-teal-900 focus:ring-teal-900 sm:text-sm ${
                   formErrors.message ? "border-red-500" : ""
                 }`}
                 placeholder="Your message..."
                 aria-label="Your Message"
               ></textarea>
               {formErrors.message && (
-                <p className="text-red-500 text-xs mt-1">
+                <p className="text-red-500 text-lg   mt-1">
                   {formErrors.message}
                 </p>
               )}
