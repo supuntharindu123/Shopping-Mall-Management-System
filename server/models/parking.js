@@ -1,3 +1,4 @@
+
 import mongoose from "mongoose";
 
 const ParkingSchema = new mongoose.Schema({
@@ -19,3 +20,4 @@ const ParkingSchema = new mongoose.Schema({
 
 const Parking = mongoose.model("Parking", ParkingSchema);
 export default Parking;
+

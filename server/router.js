@@ -65,6 +65,9 @@ import {
   updateItem,
 } from "./controller/shopcontroller/itemcontroller.js";
 
+import { CreateParking, deleteParking, getAllParking } from "./controller/parkingcontroller.js";
+import { Bookingparking } from "./controller/bookingparking.js";
+
 const router = Router();
 
 router.get("/", (req, res) => {
@@ -145,5 +148,10 @@ router.put("/items/:id", upload.single("image"), updateItem);
 router.delete("/items/:id", deleteItem);
 router.get("/items/:id", getItemById);
 router.get("/transaction/report/:shopId", transactionreport);
+
+router.post("/parking", CreateParking);
+router.get('/parkings',getAllParking);
+router.delete('/parkings/:id',deleteParking);
+router.post('/booking',Bookingparking);
 
 export default router;
