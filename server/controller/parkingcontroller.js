@@ -1,3 +1,4 @@
+
 import Parking from "../models/parking.js";
 
 // Create Parking Entry
@@ -63,3 +64,4 @@ export async function deleteParking(req, res) {
     res.status(500).json({ message: "Error deleting parking", error });
   }
 };
+
