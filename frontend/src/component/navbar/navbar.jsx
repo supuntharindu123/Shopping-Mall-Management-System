@@ -65,6 +65,7 @@ function Navbar() {
                 <FaChevronDown size={14} className="ml-1" />
               </button>
               {isServicesOpen && (
+
                 <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-xl z-50">
                   <a
                     href="/parkingHome"
@@ -87,6 +88,7 @@ function Navbar() {
                     <i className="fas fa-question-circle mr-2"></i>
                     Help & FAQ
                   </a>
+
                 </div>
               )}
             </li>

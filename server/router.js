@@ -1,4 +1,5 @@
 import { Router } from "express";
+
 import multer from "multer";
 import path from "path";
 import { authenticateToken } from "./middleware/auth.js";
@@ -65,14 +66,13 @@ import {
   updateItem,
 } from "./controller/shopcontroller/itemcontroller.js";
 
+
 import { CreateParking, deleteParking, getAllParking } from "./controller/parkingcontroller.js";
 import { Bookingparking } from "./controller/bookingparking.js";
 
 const router = Router();
 
-router.get("/", (req, res) => {
-  res.send("Hello, World!");
-});
+
 
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
@@ -149,9 +149,12 @@ router.delete("/items/:id", deleteItem);
 router.get("/items/:id", getItemById);
 router.get("/transaction/report/:shopId", transactionreport);
 
+
 router.post("/parking", CreateParking);
 router.get('/parkings',getAllParking);
 router.delete('/parkings/:id',deleteParking);
 router.post('/booking',Bookingparking);
+
+
 
 export default router;

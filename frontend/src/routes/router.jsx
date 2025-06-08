@@ -4,6 +4,7 @@ import Home from "../component/pages/home";
 import Navbar from "../component/navbar/navbar";
 import Footer from "../component/footer/footer";
 
+
 import Membershipdash from "../component/pages/membershipdash";
 import PaymentPage from "../component/pages/payement";
 import ContactUs from "../component/pages/contact";
@@ -52,6 +53,7 @@ import TransactionHistory from "../component/store/TransactionHistory";
 // import AddSupplier from "../component/store/AddSupplier";
 // import UpdateSupplier from "../component/store/UpdateSupplier";
 // import Notifications from "../component/store/Notifications";
+
 
 function App() {
   const routes = [
@@ -196,10 +198,34 @@ function App() {
       path: "/shop/:id/transactions",
       element: <Transaction />,
     },
+
     {
+      path: "/parkingHome",
+      element: <ParkingHome />,
+    },
+    {
+
+
       path: "/transactionhistory",
       element: <TransactionHistory />,
+
     },
+    {
+      path: "/editparking",
+      element: <EditParking />,
+    },
+    {
+      path: "/parkingdashboard",
+      element: <ParkingDashboard />,
+    },
+    {
+      path: "/parknglist",
+      element: <ParkingList />,
+    } ,
+    {
+      path: "/parkingadd",
+      element: <ParkingAdd />,
+    } 
   ];
   return (
     <BrowserRouter>
