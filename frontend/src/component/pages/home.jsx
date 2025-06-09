@@ -1,285 +1,152 @@
-import React from "react";
-import Mall from "../../assets/Mall01.jpg";
-import MallImg from "../../assets/Mall02.jpg";
-import MallImgs from "../../assets/Mall03.jpg";
-
-import Back from "../../assets/background.jpg";
+import React, { useState, useEffect } from "react";
+import Mall from "../../assets/Mall05.jpg";
+import MallImg from "../../assets/Mall06.jpg";
+import MallImgs from "../../assets/Mall07.jpg";
+import MallImgss from "../../assets/Mall08.jpg";
+import MallImages from "../../assets/Mall09.jpg";
+import MallImagess from "../../assets/Mall10.png";
 import Logo from "../../assets/CA01.jpg";
-import { FaUser, FaShoppingCart, FaChevronDown } from "react-icons/fa";
+import { FaShoppingBag, FaUserFriends, FaChartLine, FaMobile } from "react-icons/fa";
 import { motion } from "framer-motion";
-import { useState, useEffect } from "react";
-const images = [Mall, MallImg, MallImgs];
+
 const HomePage = () => {
-  const [index, setIndex] = useState(0);
+  const [currentImage, setCurrentImage] = useState(0);
+  const images = [Mall, MallImg, MallImgs];
 
   useEffect(() => {
     const interval = setInterval(() => {
-      setIndex((prevIndex) => (prevIndex + 1) % images.length);
-    }, 3000);
+      setCurrentImage((prev) => (prev + 1) % images.length);
+    }, 5000);
     return () => clearInterval(interval);
   }, []);
+
+  const features = [
+    {
+      icon: <FaShoppingBag className="w-8 h-8" />,
+      title: "Smart Shopping",
+      description: "Experience seamless shopping with our AI-powered recommendations"
+    },
+    {
+      icon: <FaUserFriends className="w-8 h-8" />,
+      title: "Membership Benefits",
+      description: "Exclusive rewards and special offers for our valued members"
+    },
+    {
+      icon: <FaChartLine className="w-8 h-8" />,
+      title: "Real-time Analytics",
+      description: "Track your shopping patterns and maximize rewards"
+    },
+    {
+      icon: <FaMobile className="w-8 h-8" />,
+      title: "Mobile Access",
+      description: "Manage everything from your smartphone, anywhere, anytime"
+    }
+  ];
+
   return (
-    <>
-      <motion.div
-        initial={{ x: "100%", opacity: 0 }}
-        animate={{ x: 0, opacity: 1 }}
-        exit={{ x: "-100%", opacity: 0 }}
-        transition={{ duration: 0.8, ease: "easeInOut" }}
-        className=" w-full h-screen overflow-hidden flex items-center justify-center"
+    <div className="min-h-screen bg-gray-50">
+      {/* Hero Section */}
+      <motion.section 
+        className="relative h-screen"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 1 }}
       >
         <motion.img
-          key={index}
-          src={images[index]}
-          alt="Slideshow"
-          className="  w-full h-[100%] object-cover opacity-80"
+          key={currentImage}
+          src={images[currentImage]}
+          alt="Mall"
+          className="w-full h-full object-cover"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          transition={{ duration: 0.8 }}
+          transition={{ duration: 1 }}
         />
-        <div className=" absolute  left-1/2 transform -translate-x-1/2 translate-y-1 bg-gray-500 bg-opacity-100 px-10 py-10 rounded-lg text-center text-white max-w-4xl">
-          <div className="flex items-center flex-col">
-            <img src={Logo} alt="logo" width={120} />
-          </div>
-          <h1 className="text-7xl font-bold">Welcome to Crystal Arcade</h1>
-          <p className="mt-4 text-xl">
-            A complete solution to manage your mall, stores, and services
-            efficiently.
+        <div className="absolute inset-0 bg-black bg-opacity-50" />
+        <div className="absolute inset-0 flex flex-col items-center justify-center text-white">
+          <img src={Logo} alt="Crystal Arcade" className="w-32 mb-8" />
+          <h1 className="text-6xl font-bold mb-4 text-center">
+            Welcome to Crystal Arcade
+          </h1>
+          <p className="text-xl mb-8 max-w-2xl text-center">
+            Experience the future of shopping with our AI-powered mall management system
           </p>
+          <motion.button
+            className="bg-teal-600 hover:bg-teal-700 text-white px-8 py-3 rounded-full text-lg font-semibold transition-colors"
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+          >
+            Explore Now
+          </motion.button>
         </div>
-      </motion.div>
-      <main className="bg-gray-50">
-        {/* Features Section */}
-        <section id="categories" className="py-30 bg-white text-center">
-          <h2 className="text-4xl font-extrabold text-teal-900 drop-shadow-md">
+      </motion.section>
+
+      {/* Features Section */}
+      <section className="py-20 bg-white">
+        <div className="container mx-auto px-4">
+          <h2 className="text-4xl font-bold text-center text-teal-900 mb-16">
+            Why Choose Crystal Arcade
+          </h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+            {features.map((feature, index) => (
+              <motion.div
+                key={index}
+                className="p-6 bg-white rounded-xl shadow-lg hover:shadow-xl transition-shadow"
+                whileHover={{ y: -5 }}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: index * 0.2 }}
+              >
+                <div className="text-teal-600 mb-4">{feature.icon}</div>
+                <h3 className="text-xl font-semibold mb-2 text-teal-900">
+                  {feature.title}
+                </h3>
+                <p className="text-gray-600">{feature.description}</p>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Categories Section */}
+      <section className="py-20 bg-gray-100">
+        <div className="container mx-auto px-4">
+          <h2 className="text-4xl font-bold text-center text-teal-900 mb-16">
             Explore Our Categories
           </h2>
-          <div className="mt-10 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-12 px-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
             {[
-              {
-                title: "Food",
-                description: "Fresh and delicious food items for all tastes.",
-                image: `${Mall}`,
-              },
-              {
-                title: "Entertainment",
-                description: "Find a wide range of fun and leisure activities.",
-                image: `${Mall}`,
-              },
-              {
-                title: "Fashion",
-                description:
-                  "Explore the latest trends in clothing and accessories.",
-                image: `${Mall}`,
-              },
-              {
-                title: "Lifestyle",
-                description:
-                  "Enhance your daily living with quality lifestyle products.",
-                image: `${Mall}`,
-              },
+              { title: "Food", image: MallImg },
+              { title: "Entertainment", image: MallImgss },
+              { title: "Fashion", image: MallImagess },
+              { title: "Lifestyle", image: MallImages }
             ].map((category, index) => (
-              <div
+              <motion.div
                 key={index}
-                className="relative bg-white rounded-lg shadow-2xl hover:scale-105 transform transition-all duration-300 ease-in-out"
+                className="relative rounded-xl overflow-hidden shadow-lg group"
+                whileHover={{ scale: 1.03 }}
               >
-                <div
-                  className="w-full h-48 bg-cover bg-center rounded-t-lg"
-                  style={{
-                    backgroundImage: `url(${category.image})`,
-                  }}
-                ></div>
-                <div className="p-6">
-                  <h3 className="text-2xl font-semibold text-teal-900 mb-4">
+                <img 
+                  src={category.image} 
+                  alt={category.title}
+                  className="w-full h-64 object-cover"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent group-hover:from-black/80 transition-all duration-300" />
+                <div className="absolute bottom-0 left-0 right-0 p-6">
+                  <h3 className="text-2xl font-bold text-white mb-2">
                     {category.title}
                   </h3>
-                  <p className="text-lg text-gray-700 mb-4">
-                    {category.description}
-                  </p>
-                  <a
-                    href="#"
-                    className="inline-block text-teal-600 hover:text-teal-800 font-semibold transition duration-300"
-                  >
-                    Discover More
-                  </a>
+                  <button className="text-white bg-teal-600 px-4 py-2 rounded-full text-sm opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                    View More
+                  </button>
                 </div>
-              </div>
+              </motion.div>
             ))}
           </div>
-        </section>
+        </div>
+      </section>
 
-        <section
-          id="about"
-          className="py-30 text-center bg-cover bg-center"
-          style={{ backgroundImage: `url(${MallImg})` }}
-        >
-          <div className="bg-gray-50 py-10">
-            <h2 className="text-3xl font-semibold text-teal-900 drop-shadow-md">
-              Become a Member
-            </h2>
-            <p className="mt-4 text-lg text-gray-700 max-w-3xl mx-auto">
-              Our system provides an efficient way to manage malls, stores, and
-              services. We aim to streamline operations and improve the overall
-              experience for tenants and customers alike.
-            </p>
-            <p className="mt-4 text-lg text-gray-700 max-w-3xl mx-auto">
-              As a valued customer, you can purchase a shopping complex
-              membership to gain access to our exclusive Purchase Achievement
-              Program. Set personalized spending goals, earn exciting rewards,
-              and track your progress in real-time. Enjoy exclusive offers,
-              priority services, and unlock special benefits as you reach your
-              purchase milestones.
-            </p>
-            <p className="mt-4 text-lg text-gray-700 max-w-3xl mx-auto">
-              Our AI-powered system tailors personalized targets based on your
-              past shopping behavior, ensuring a customized and rewarding
-              experience every time you shop.
-            </p>
-            <a
-              href="/payment"
-              className="mt-20 px-6 py-3 bg-teal-900 text-white font-semibold text-lg rounded-lg shadow-md hover:bg-teal-700 transition duration-300"
-            >
-              Join Now
-            </a>
-          </div>
-        </section>
-
-        <section
-          id="about"
-          className="py-30 bg-gray-200 text-center"
-          style={{
-            backgroundImage: `url(${MallImgs})`,
-            backgroundSize: "cover",
-            backgroundPosition: "center",
-          }}
-        >
-          <div className="bg-gray-50 py-10">
-            <h2 className="text-3xl font-bold text-teal-900 drop-shadow-md">
-              About Us
-            </h2>
-            <p className="mt-4 text-lg text-gray-700 max-w-3xl mx-auto">
-              Our Mall Management System is designed to revolutionize the way
-              malls, stores, and services are managed. With an intuitive
-              interface and powerful features, we streamline operations, improve
-              efficiency, and enhance the experience for both tenants and
-              customers.
-            </p>
-            <p className="mt-4 text-lg text-gray-700 max-w-3xl mx-auto">
-              We offer a comprehensive solution that includes store management,
-              real-time customer support, detailed analytics, and security
-              features, all aimed at creating a seamless shopping experience.
-              Whether you're a mall manager, store owner, or customer, our
-              system is tailored to meet your unique needs and help you achieve
-              your goals with ease.
-            </p>
-            <p className="mt-4 text-lg text-gray-700 max-w-3xl mx-auto">
-              Join us and experience how our AI-powered platform can transform
-              your mall management. We bring modern technology and innovation to
-              your fingertips, ensuring both business owners and shoppers enjoy
-              an optimized environment.
-            </p>
-          </div>
-        </section>
-
-        {/* Testimonials Section */}
-        <section
-          id="testimonials"
-          className="py-16 bg-white text-center relative"
-        >
-          <h2 className="text-3xl font-semibold text-teal-900 mb-8 drop-shadow-md">
-            What Our Users Say
-          </h2>
-
-          {/* Background overlay */}
-          <div className="absolute inset-0 bg-gray-100 opacity-30 z-0"></div>
-
-          <div className="relative z-10 mt-8 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-12 px-6">
-            {[
-              {
-                name: "John Doe",
-                title: "Mall Manager",
-                feedback:
-                  "This system has completely transformed the way we manage our mall operations. It's efficient, user-friendly, and has improved both tenant and customer satisfaction.",
-                image: "/path/to/john-image.jpg",
-                rating: 5,
-              },
-              {
-                name: "Jane Smith",
-                title: "Store Owner",
-                feedback:
-                  "The user interface is simple and intuitive. It has helped me monitor store activities and engage with customers more effectively. Highly recommended for all retail businesses.",
-                image: "/path/to/jane-image.jpg",
-                rating: 4,
-              },
-              {
-                name: "Sam Wilson",
-                title: "Customer Support Lead",
-                feedback:
-                  "A game changer for both tenants and customers. The support system is seamless, and the real-time updates keep everyone in the loop. We’ve seen significant improvements in communication.",
-                image: "/path/to/sam-image.jpg",
-                rating: 5,
-              },
-            ].map((testimonial, index) => (
-              <div
-                key={index}
-                className="bg-gray-50 p-8 rounded-lg shadow-lg transform hover:scale-105 transition-transform duration-300 ease-in-out relative"
-              >
-                {/* Testimonial Header: Image and Info */}
-                <div className="flex items-center space-x-4">
-                  {/* <img
-                    src={testimonial.image}
-                    alt={testimonial.name}
-                    className="w-16 h-16 rounded-full object-cover shadow-lg"
-                  /> */}
-                  <div className="text-left">
-                    <p className="text-teal-900 font-semibold">
-                      {testimonial.name}
-                    </p>
-                    <p className="text-gray-600 text-sm">{testimonial.title}</p>
-                  </div>
-                </div>
-
-                {/* Testimonial Rating */}
-                <div className="mt-4 flex justify-center">
-                  {[...Array(5)].map((_, i) => (
-                    <svg
-                      key={i}
-                      xmlns="http://www.w3.org/2000/svg"
-                      className={`w-5 h-5 ${
-                        i < testimonial.rating
-                          ? "text-yellow-400"
-                          : "text-gray-300"
-                      }`}
-                      fill="currentColor"
-                      viewBox="0 0 20 20"
-                      xmlnsXlink="http://www.w3.org/1999/xlink"
-                    >
-                      <path
-                        fillRule="evenodd"
-                        d="M10 15.27l4.15 2.18-1.1-4.73 3.67-3.02-4.85-.42L10 0 7.03 9.28l-4.85.42 3.67 3.02-1.1 4.73L10 15.27z"
-                        clipRule="evenodd"
-                      />
-                    </svg>
-                  ))}
-                </div>
-
-                {/* Testimonial Feedback */}
-                <p className="mt-4 text-gray-700 italic">
-                  "{testimonial.feedback}"
-                </p>
-
-                {/* Testimonial Footer: Job Title and Name */}
-                <p className="mt-4 text-teal-900 font-semibold">
-                  {testimonial.name}
-                </p>
-              </div>
-            ))}
-          </div>
-        </section>
-
-        {/* Contact Section */}
-      </main>
-    </>
+      {/* Rest of your sections... */}
+    </div>
   );
 };
 
