@@ -1,3 +1,4 @@
+
 import Booking from '../models/booking.js'
 
 // Add a new parking record
@@ -71,3 +72,4 @@ export async function Bookingparking(req, res){
 //     res.status(500).json({ error: "Failed to delete parking record" });
 //   }
 // };
+

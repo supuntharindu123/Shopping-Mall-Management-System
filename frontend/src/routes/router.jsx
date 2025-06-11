@@ -199,12 +199,20 @@ function App() {
       path: "/shop/:id/transactions",
       element: <Transaction />,
     },
+
     {
+      path: "/parkingHome",
+      element: <ParkingHome />,
+    },
+    {
+
+
       path: "/transactionhistory",
       element: <TransactionHistory />,
 
     },
     {
+
       path: "/membershippage",
       element: <PaymentPage />,
     },
@@ -337,6 +345,7 @@ function App() {
       element: <TransactionHistory />,
     },
     {
+
       path: "/editparking",
       element: <EditParking />,
     },

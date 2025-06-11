@@ -29,3 +29,4 @@ const ParkingSchema = new mongoose.Schema(
 const Booking = mongoose.model("Booking", ParkingSchema);
 export default Booking;
 
+

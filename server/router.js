@@ -1,4 +1,5 @@
 import { Router } from "express";
+
 import multer from "multer";
 import path from "path";
 
@@ -52,10 +53,11 @@ import {
   updatecategory,
 } from "./controller/parkingcontroller/parkingcontroller.js";
 
+
 // Router setup
 const router = Router();
 
-// Multer configuration (single instance)
+
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
     cb(null, "uploads/");
@@ -114,5 +116,8 @@ router.delete("/parkingcategory/:id", deletecategory);
 router.get("/parkingcategory/:id", getcategorybyid);
 router.patch("/booking/:bookingId", updateBookingStatus);
 router.get("/booking/:username", getBookingsByUsername);
+
+
+
 
 export default router;
