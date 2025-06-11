@@ -1,7 +1,7 @@
 import User from "../../models/User.js";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
-import PDFDocument from "pdfkit";
+
 
 export async function RegisterUser(req, res) {
   try {
@@ -170,7 +170,9 @@ export async function UpdateUser(req, res) {
         email,
         phoneNumber,
         role,
-        updatedAt: new Date(),
+
+        updatedAt: new Date()
+
       },
       { new: true, select: "-password" }
     );
@@ -181,7 +183,9 @@ export async function UpdateUser(req, res) {
 
     res.status(200).json({
       message: "User updated successfully",
-      user: updatedUser,
+
+      user: updatedUser
+
     });
   } catch (error) {
     console.error("Error updating user:", error);
@@ -211,82 +215,3 @@ export async function DeleteUser(req, res) {
   }
 }
 
-export async function userReport(req, res) {
-  try {
-    const users = await User.find();
-
-    if (!users.length) {
-      return res.status(404).json({ message: "No users found." });
-    }
-
-    // Set headers before creating document
-    const filename = `Membership_Report_${Date.now()}.pdf`;
-    res.setHeader("Content-Type", "application/pdf");
-    res.setHeader("Content-Disposition", `attachment; filename="${filename}"`);
-
-    // Create PDF document
-    const doc = new PDFDocument({ margin: 30, size: "A4" });
-
-    // Handle errors in the pipe operation
-    doc.on('error', (err) => {
-      console.error('Error in PDF generation:', err);
-      res.status(500).end();
-    });
-
-    // Pipe the PDF into the response
-    doc.pipe(res);
-
-    // Add content to PDF
-    doc.fontSize(20).text("User Membership Report", { align: "center" });
-    doc.moveDown();
-
-    let i = 0;
-    for (const user of users) {
-      doc.fontSize(12).text(`${++i}. Name: ${user.name}`);
-      doc.text(`   Email: ${user.email}`);
-      doc.text(`   Phone: ${user.phoneNumber}`);
-      doc.text(`   Role: ${user.role}`);
-      doc.text(`   Points: ${user.points}`);
-      doc.moveDown(0.5);
-
-      if (user.membershipPackage?.length > 0) {
-        user.membershipPackage.forEach((pkg, index) => {
-          doc.text(`   - Package ${index + 1}:`);
-          doc.text(`     • Name: ${pkg.packagename}`);
-          doc.text(
-            `     • Activated: ${new Date(
-              pkg.activatedate
-            ).toLocaleDateString()}`
-          );
-          doc.text(`     • Points Per $: ${pkg.pointsPerDollar}`);
-          doc.text(`     • Discount: ${pkg.discount ?? "N/A"}`);
-          doc.text(`     • Category: ${pkg.category ?? "N/A"}`);
-          doc.text(
-            `     • Benefits: ${
-              pkg.benifits?.length ? pkg.benifits.join(", ") : "None"
-            }`
-          );
-        });
-      } else {
-        doc.text(`   Membership Package: None`);
-      }
-
-      doc.moveDown();
-    }
-
-    // Properly end the document
-    doc.end();
-
-    // Add error handling for the response stream
-    res.on('error', (err) => {
-      console.error('Error in response stream:', err);
-    });
-
-  } catch (error) {
-    console.error("Error generating membership report:", error);
-    // Only send error response if headers haven't been sent
-    if (!res.headersSent) {
-      res.status(500).json({ error: "Failed to generate membership report" });
-    }
-  }
-}

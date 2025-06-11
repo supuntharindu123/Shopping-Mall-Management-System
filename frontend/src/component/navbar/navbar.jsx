@@ -66,6 +66,8 @@ function Navbar() {
               </button>
               {isServicesOpen && (
 
+
+
                 <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-xl z-50">
                   <a
                     href="/parkingHome"
@@ -88,6 +90,8 @@ function Navbar() {
                     <i className="fas fa-question-circle mr-2"></i>
                     Help & FAQ
                   </a>
+
+
 
                 </div>
               )}
