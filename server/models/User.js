@@ -5,11 +5,16 @@ const UserSchema = new mongoose.Schema({
   name: { type: String, required: true },
   email: { type: String, required: true, unique: true },
   password: { type: String, required: true },
+  phoneNumber: { type: String, required: true },
   role: { type: String, enum: ["user", "admin"], default: "user" },
   membershipPackage: [
     {
       packagename: { type: String, default: "basics" },
       activatedate: { type: Date, default: Date.now },
+      pointsPerDollar: { type: Number, default: 0 },
+      benifits: { type: Array },
+      discount: { type: Number, require: false },
+      category: { type: String, require: false },
     },
   ],
   points: { type: Number, default: 0 },

@@ -14,7 +14,7 @@ const ParkingSchema = new mongoose.Schema({
   location: {
     type: Number,
     required: true,
-  },
+  }, //example 001,002,003
 });
 
 const Parking = mongoose.model("Parking", ParkingSchema);
