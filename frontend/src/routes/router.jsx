@@ -76,6 +76,133 @@ function App() {
     {
       path: "/membershipadmin",
       element: <MembershipAdmin />,
+
+    },
+    {
+      path: "/membershippage",
+      element: <PaymentPage />,
+    },
+    {
+      path: "/profile",
+      element: <UserProfile />,
+    },
+    {
+      path: "/addpackage",
+      element: <MembershipPackages />,
+    },
+    {
+      path: "/updatepackage/:id",
+      element: <UpdateMembershipPackage />,
+    },
+    {
+      path: "/addrewards",
+      element: <AddRewardsForm />,
+    },
+    {
+      path: "/updaterewards/:id",
+      element: <UpdateRewardsForm />,
+    },
+    {
+      path: "/login",
+      element: <LoginPage />,
+    },
+    {
+      path: "/register",
+      element: <RegisterPage />,
+    },
+    {
+      path: "/addtransaction",
+      element: <AddTransaction />,
+    },
+    {
+      path: "/faq",
+      element: <FAQPage />,
+    },
+    {
+      path: "/security",
+      element: <SecurityLostFound />,
+    },
+    {
+      path: "/admin",
+      element: <AdminDashboards />,
+    },
+    {
+      path: "/logout",
+      element: <Logout />,
+    },
+    {
+      path: "/stripe",
+      element: <WrappedPurchaseForm />,
+    },
+
+    //parking
+    {
+      path: "/booking",
+      element: <BookingPage />,
+    },
+    {
+      path: "/parkingHome",
+      element: <ParkingHome />,
+    },
+
+    {
+      path: "/editparking",
+      element: <EditParking />,
+    },
+    {
+      path: "/parkingdashboard",
+      element: <ParkingDashboard />,
+    },
+    {
+      path: "/parknglist",
+      element: <ParkingList />,
+    },
+    {
+      path: "/parkingadd",
+      element: <AddParking />,
+    },
+    {
+      path: "/parkingcategory",
+      element: <ParkingCategory />,
+    },
+    {
+      path: "/availableparkingspots",
+      element: <AvailableSpots />,
+    },
+    {
+      path: "/reserveparkingspots",
+      element: <ReserveSpots />,
+    },
+
+    //store
+    {
+      path: "/adminshop",
+      element: <Adminshop />,
+    },
+    {
+      path: "/shopadd",
+      element: <Addshops />,
+    },
+    {
+      path: "/shops",
+      element: <AllShops />,
+    },
+    {
+      path: "/shop/:id",
+      element: <Viewshop />,
+    },
+    {
+      path: "/adminshop/:id",
+      element: <Adminviewshop />,
+    },
+    {
+      path: "/shop/:id/transactions",
+      element: <Transaction />,
+    },
+    {
+      path: "/transactionhistory",
+      element: <TransactionHistory />,
+
     },
     {
       path: "/membershippage",
