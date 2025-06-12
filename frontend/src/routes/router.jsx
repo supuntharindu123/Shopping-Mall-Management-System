@@ -19,23 +19,23 @@ import AddTransaction from "../component/admin/addtransaction";
 
 //parking
 
-import EditParking from "../component/Parking/EditParking";
+import EditParking from "../component/Parking/updateparking";
 
-import ParkingList from "../component/Parking/ParkingList";
-import ParkingHome from "../component/Parking/ParkingHome";
 
+import ParkingHome from "../component/Parking/parkinguser";
+ 
 import FAQPage from "../component/pages/faq";
 import SecurityLostFound from "../component/pages/security";
 import RegisterPage from "../component/userprofile/register";
 import AdminDashboards from "../component/userprofile/useradmin";
 import Logout from "../component/userprofile/logout";
 import WrappedPurchaseForm from "../component/packges/purchasepackage";
-import AddParking from "../component/parking/adminparking/parkingadd";
+import AddParking from "../component/Parking/adminparking/createparking";
 
 import ParkingCategory from "../component/parking/adminparking/parkingcategory";
 import AvailableSpots from "../component/parking/AvailableSpots";
 import ReserveSpots from "../component/parking/ReserveSpots";
-import ParkingDashboard from "../component/parking/ParkingDashboard";
+import ParkingDashboard from "../component/Parking/dashboardparking";
 import BookingPage from "../component/parking/BookingParking";
 
 import Addshops from "../component/store/addshops";
@@ -153,10 +153,7 @@ function App() {
       path: "/parkingdashboard",
       element: <ParkingDashboard />,
     },
-    {
-      path: "/parknglist",
-      element: <ParkingList />,
-    },
+
     {
       path: "/parkingadd",
       element: <AddParking />,
@@ -287,10 +284,7 @@ function App() {
       path: "/parkingdashboard",
       element: <ParkingDashboard />,
     },
-    {
-      path: "/parknglist",
-      element: <ParkingList />,
-    },
+
     {
       path: "/parkingadd",
       element: <AddParking />,
@@ -353,14 +347,8 @@ function App() {
       path: "/parkingdashboard",
       element: <ParkingDashboard />,
     },
-    {
-      path: "/parknglist",
-      element: <ParkingList />,
-    } ,
-    {
-      path: "/parkingadd",
-      element: <ParkingAdd />,
-    } 
+
+ 
   ];
   return (
     <BrowserRouter>

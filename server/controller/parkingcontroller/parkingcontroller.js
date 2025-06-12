@@ -263,7 +263,6 @@ export async function getcategorybyid(req, res) {
   } catch (err) {
     console.error("Error fetching category:", err);
     res.status(500).json({ message: "Internal server error" });
-
   }
 }
 
@@ -308,7 +307,6 @@ export async function deleteParking(req, res) {
     res.status(500).json({ message: "Error deleting parking", error });
   }
 }
-
 
 // Get all parking bookings
 export async function getAllParkingBookings(req, res) {
@@ -422,74 +420,73 @@ export async function getBookingsByUsername(req, res) {
   }
 }
 
-// export async function parkingReport(req, res) {
-//   try {
-//     const bookings = await Booking.find().sort({ createdAt: -1 });
+export async function parkingReport(req, res) {
+  try {
+    const bookings = await Booking.find().sort({ createdAt: -1 });
 
-//     if (!bookings.length) {
-//       return res.status(404).json({ message: "No bookings found." });
-//     }
+    if (!bookings.length) {
+      return res.status(404).json({ message: "No bookings found." });
+    }
 
-//     // Create a PDF document
-//     const doc = new PDFDocument({ margin: 30, size: "A4" });
-//     const filename = `Parking_Booking_Report_${Date.now()}.pdf`;
+    // Create a PDF document
+    const doc = new PDFDocument({ margin: 30, size: "A4" });
+    const filename = `Parking_Booking_Report_${Date.now()}.pdf`;
 
-//     // Set response headers to download the file
-//     res.setHeader("Content-Disposition", `attachment; filename="${filename}"`);
-//     res.setHeader("Content-Type", "application/pdf");
+    // Set response headers to download the file
+    res.setHeader("Content-Disposition", `attachment; filename="${filename}"`);
+    res.setHeader("Content-Type", "application/pdf");
 
-//     // Pipe the PDF to the response
-//     doc.pipe(res);
+    // Pipe the PDF to the response
+    doc.pipe(res);
 
-//     // Title
-//     doc.fontSize(20).text("Parking Booking Report", { align: "center" });
-//     doc.moveDown(1);
+    // Title
+    doc.fontSize(20).text("Parking Booking Report", { align: "center" });
+    doc.moveDown(1);
 
-//     // Table header
-//     doc
-//       .fontSize(12)
-//       .fillColor("#000")
-//       .text("No.", { continued: true, width: 40 })
-//       .text("Full Name", { continued: true, width: 120 })
-//       .text("License Plate", { continued: true, width: 100 })
-//       .text("Vehicle Type", { continued: true, width: 90 })
-//       .text("Parking Spot", { continued: true, width: 90 })
-//       .text("Arrival Time", { continued: true, width: 110 })
-//       .text("Departure Time", { continued: true, width: 110 })
-//       .text("Net Amount", { width: 70 });
-//     doc.moveDown(0.5);
+    // Table header
+    doc
+      .fontSize(12)
+      .fillColor("#000")
+      .text("No.", { continued: true, width: 40 })
+      .text("Full Name", { continued: true, width: 120 })
+      .text("License Plate", { continued: true, width: 100 })
+      .text("Vehicle Type", { continued: true, width: 90 })
+      .text("Parking Spot", { continued: true, width: 90 })
+      .text("Arrival Time", { continued: true, width: 110 })
+      .text("Departure Time", { continued: true, width: 110 })
+      .text("Net Amount", { width: 70 });
+    doc.moveDown(0.5);
 
-//     // Draw a line under header
-//     doc.moveTo(doc.x, doc.y).lineTo(550, doc.y).stroke();
+    // Draw a line under header
+    doc.moveTo(doc.x, doc.y).lineTo(550, doc.y).stroke();
 
-//     // List bookings
-//     bookings.forEach((b, i) => {
-//       doc
-//         .fontSize(10)
-//         .fillColor("#333")
-//         .text(i + 1, { continued: true, width: 40 })
-//         .text(b.fullName, { continued: true, width: 120 })
-//         .text(b.licensePlate, { continued: true, width: 100 })
-//         .text(b.vehicleType, { continued: true, width: 90 })
-//         .text(b.parkingSpot, { continued: true, width: 90 })
-//         .text(new Date(b.arrivalTime).toLocaleString(), {
-//           continued: true,
-//           width: 110,
-//         })
-//         .text(new Date(b.departureTime).toLocaleString(), {
-//           continued: true,
-//           width: 110,
-//         })
-//         .text(b.netAmount ? `$${b.netAmount.toFixed(2)}` : "N/A", {
-//           width: 70,
-//         });
-//       doc.moveDown(0.2);
-//     });
+    // List bookings
+    bookings.forEach((b, i) => {
+      doc
+        .fontSize(10)
+        .fillColor("#333")
+        .text(i + 1, { continued: true, width: 40 })
+        .text(b.fullName, { continued: true, width: 120 })
+        .text(b.licensePlate, { continued: true, width: 100 })
+        .text(b.vehicleType, { continued: true, width: 90 })
+        .text(b.parkingSpot, { continued: true, width: 90 })
+        .text(new Date(b.arrivalTime).toLocaleString(), {
+          continued: true,
+          width: 110,
+        })
+        .text(new Date(b.departureTime).toLocaleString(), {
+          continued: true,
+          width: 110,
+        })
+        .text(b.netAmount ? `$${b.netAmount.toFixed(2)}` : "N/A", {
+          width: 70,
+        });
+      doc.moveDown(0.2);
+    });
 
-//     doc.end();
-//   } catch (error) {
-//     console.error("Error generating report:", error);
-//     res.status(500).json({ error: "Failed to generate report" });
-//   }
-// }
-
+    doc.end();
+  } catch (error) {
+    console.error("Error generating report:", error);
+    res.status(500).json({ error: "Failed to generate report" });
+  }
+}

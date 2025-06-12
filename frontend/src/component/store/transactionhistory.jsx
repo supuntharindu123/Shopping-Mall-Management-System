@@ -32,30 +32,54 @@ const TransactionHistory = () => {
           ...new Set(data.flatMap((t) => t.items.map((i) => i.itemId))),
         ];
 
-        // Fetch user details
+        // Fetch user details with error handling
         const userResponses = await Promise.all(
           userIds.map(async (id) => {
-            const res = await fetch(`http://localhost:3001/api/user/${id}`);
-            if (!res.ok) throw new Error(`Failed to fetch user ${id}`);
-            return res.json();
+            try {
+              const res = await fetch(`http://localhost:3001/api/user/${id}`);
+              if (!res.ok) {
+                console.warn(`User ${id} not found`);
+                return { _id: id, name: "Deleted User" };
+              }
+              return res.json();
+            } catch (error) {
+              console.warn(`Error fetching user ${id}:`, error);
+              return { _id: id, name: "Deleted User" };
+            }
           })
         );
 
-        // Fetch shop details
+        // Fetch shop details with error handling
         const shopResponses = await Promise.all(
           shopIds.map(async (id) => {
-            const res = await fetch(`http://localhost:3001/api/shop/${id}`);
-            if (!res.ok) throw new Error(`Failed to fetch shop ${id}`);
-            return res.json();
+            try {
+              const res = await fetch(`http://localhost:3001/api/shop/${id}`);
+              if (!res.ok) {
+                console.warn(`Shop ${id} not found`);
+                return { _id: id, shopName: "Deleted Shop" };
+              }
+              return res.json();
+            } catch (error) {
+              console.warn(`Error fetching shop ${id}:`, error);
+              return { _id: id, shopName: "Deleted Shop" };
+            }
           })
         );
 
-        // Fetch item details
+        // Fetch item details with error handling
         const itemResponses = await Promise.all(
           itemIds.map(async (id) => {
-            const res = await fetch(`http://localhost:3001/api/items/${id}`);
-            if (!res.ok) throw new Error(`Failed to fetch item ${id}`);
-            return res.json();
+            try {
+              const res = await fetch(`http://localhost:3001/api/items/${id}`);
+              if (!res.ok) {
+                console.warn(`Item ${id} not found`);
+                return { _id: id, name: "Deleted Item" };
+              }
+              return res.json();
+            } catch (error) {
+              console.warn(`Error fetching item ${id}:`, error);
+              return { _id: id, name: "Deleted Item" };
+            }
           })
         );
 

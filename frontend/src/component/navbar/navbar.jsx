@@ -76,13 +76,13 @@ function Navbar() {
                     <i className="fas fa-parking mr-2"></i>
                     Parking Services
                   </a>
-                  <a
+                  {/* <a
                     href="/security"
                     className="block px-4 py-2 text-gray-800 hover:bg-gray-100  items-center"
                   >
                     <i className="fas fa-shield-alt mr-2"></i>
                     Security
-                  </a>
+                  </a> */}
                   <a
                     href="/Faq"
                     className="block px-4 py-2 text-gray-800 hover:bg-gray-100  items-center"
