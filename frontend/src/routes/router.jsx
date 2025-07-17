@@ -4,8 +4,6 @@ import Home from "../component/pages/home";
 import Navbar from "../component/navbar/navbar";
 import Footer from "../component/footer/footer";
 
-
-import Membershipdash from "../component/pages/membershipdash";
 import PaymentPage from "../component/pages/payement";
 import ContactUs from "../component/pages/contact";
 import UserProfile from "../component/userprofile/profile";
@@ -21,9 +19,8 @@ import AddTransaction from "../component/admin/addtransaction";
 
 import EditParking from "../component/Parking/updateparking";
 
-
 import ParkingHome from "../component/Parking/parkinguser";
- 
+
 import FAQPage from "../component/pages/faq";
 import SecurityLostFound from "../component/pages/security";
 import RegisterPage from "../component/userprofile/register";
@@ -32,7 +29,7 @@ import Logout from "../component/userprofile/logout";
 import WrappedPurchaseForm from "../component/packges/purchasepackage";
 import AddParking from "../component/Parking/adminparking/createparking";
 
-import ParkingCategory from "../component/parking/adminparking/parkingcategory";
+import ParkingCategory from "../component/Parking/adminparking/parkingcategory";
 import AvailableSpots from "../component/parking/AvailableSpots";
 import ReserveSpots from "../component/parking/ReserveSpots";
 import ParkingDashboard from "../component/Parking/dashboardparking";
@@ -54,7 +51,6 @@ import TransactionHistory from "../component/store/TransactionHistory";
 // import UpdateSupplier from "../component/store/UpdateSupplier";
 // import Notifications from "../component/store/Notifications";
 
-
 function App() {
   const routes = [
     {
@@ -65,18 +61,10 @@ function App() {
       path: "/contact",
       element: <ContactUs />,
     },
-    // {
-    //   path: "/membership",
-    //   element: <AdminDashboard />,
-    // },
-    {
-      path: "/membershipdash",
-      element: <Membershipdash />,
-    },
+
     {
       path: "/membershipadmin",
       element: <MembershipAdmin />,
-
     },
     {
       path: "/membershippage",
@@ -202,14 +190,10 @@ function App() {
       element: <ParkingHome />,
     },
     {
-
-
       path: "/transactionhistory",
       element: <TransactionHistory />,
-
     },
     {
-
       path: "/membershippage",
       element: <PaymentPage />,
     },
@@ -333,13 +317,10 @@ function App() {
       element: <ParkingHome />,
     },
     {
-
-
       path: "/transactionhistory",
       element: <TransactionHistory />,
     },
     {
-
       path: "/editparking",
       element: <EditParking />,
     },
@@ -347,8 +328,6 @@ function App() {
       path: "/parkingdashboard",
       element: <ParkingDashboard />,
     },
-
- 
   ];
   return (
     <BrowserRouter>

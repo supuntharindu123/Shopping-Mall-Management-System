@@ -2,7 +2,95 @@ import User from "../../models/User.js";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import PDFDocument from "pdfkit";
+import { OAuth2Client } from "google-auth-library";
 
+const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
+
+const generateToken = (user) => {
+  return jwt.sign({ id: user._id, email: user.email }, process.env.JWT_SECRET, {
+    expiresIn: "2d",
+  });
+};
+
+export async function GoogleLogin(req, res) {
+  const { credential } = req.body;
+  if (!credential) {
+    return res.status(400).json({
+      message: "Google authentication failed",
+      error: "No credential provided",
+    });
+  }
+
+  try {
+    const ticket = await client.verifyIdToken({
+      idToken: credential,
+      audience: process.env.GOOGLE_CLIENT_ID,
+    });
+
+    const payload = ticket.getPayload();
+    const { email, name, picture, sub: googleId } = payload;
+
+    if (!email) {
+      return res.status(400).json({
+        message: "Google authentication failed",
+        error: "Email not provided by Google",
+      });
+    }
+
+    let user = await User.findOne({ email });
+    if (!user) {
+      user = await User.create({
+        name: name,
+        email: email,
+        googleId: googleId,
+        profilePicture: picture,
+      });
+    }
+
+    const token = generateToken(user);
+    res.json({
+      message: "Login successful",
+      token,
+      role: user.role,
+      username: user.name,
+      id: user._id,
+      profilePicture: user.profilePicture,
+    });
+  } catch (error) {
+    console.error("Login error:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+}
+
+export async function LoginUser(req, res) {
+  try {
+    const { email, password } = req.body;
+    const user = await User.findOne({ email });
+
+    if (!user) {
+      return res.status(401).json({ message: "Invalid email or password" });
+    }
+
+    const isValidPassword = await bcrypt.compare(password, user.password);
+
+    if (!isValidPassword) {
+      return res.status(401).json({ message: "Invalid email or password" });
+    }
+
+    const token = generateToken(user);
+
+    res.json({
+      message: "Login successful",
+      token,
+      role: user.role,
+      username: user.name,
+      id: user._id,
+    });
+  } catch (error) {
+    console.error("Login error:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+}
 
 export async function RegisterUser(req, res) {
   try {
@@ -35,43 +123,6 @@ export async function RegisterUser(req, res) {
           ? "Email or username already exists"
           : "Internal server error",
     });
-  }
-}
-
-export async function LoginUser(req, res) {
-  try {
-    const { email, password } = req.body;
-    const user = await User.findOne({ email });
-
-    if (!user) {
-      return res.status(401).json({ message: "Invalid email or password" });
-    }
-
-    const isValidPassword = await bcrypt.compare(password, user.password);
-
-    if (!isValidPassword) {
-      return res.status(401).json({ message: "Invalid email or password" });
-    }
-
-    const token = jwt.sign(
-      {
-        userId: user._id,
-        role: user.role,
-      },
-      process.env.JWT_SECRET || "secret_key",
-      { expiresIn: "24h" }
-    );
-
-    res.json({
-      message: "Login successful",
-      token,
-      role: user.role,
-      username: user.name,
-      id: user._id,
-    });
-  } catch (error) {
-    console.error("Login error:", error);
-    res.status(500).json({ message: "Internal server error" });
   }
 }
 
@@ -111,6 +162,7 @@ export async function GetUserById(req, res) {
       name: user.name,
       email: user.email,
       phoneNumber: user.phoneNumber,
+      profilePicture: user.profilePicture,
       membershipPackage: user.membershipPackage,
       points: user.points,
       role: user.role,
@@ -172,8 +224,7 @@ export async function UpdateUser(req, res) {
         phoneNumber,
         role,
 
-        updatedAt: new Date()
-
+        updatedAt: new Date(),
       },
       { new: true, select: "-password" }
     );
@@ -185,8 +236,7 @@ export async function UpdateUser(req, res) {
     res.status(200).json({
       message: "User updated successfully",
 
-      user: updatedUser
-
+      user: updatedUser,
     });
   } catch (error) {
     console.error("Error updating user:", error);
@@ -224,24 +274,19 @@ export async function userReport(req, res) {
       return res.status(404).json({ message: "No users found." });
     }
 
-    // Set headers before creating document
     const filename = `Membership_Report_${Date.now()}.pdf`;
     res.setHeader("Content-Type", "application/pdf");
     res.setHeader("Content-Disposition", `attachment; filename="${filename}"`);
 
-    // Create PDF document
     const doc = new PDFDocument({ margin: 30, size: "A4" });
 
-    // Handle errors in the pipe operation
-    doc.on('error', (err) => {
-      console.error('Error in PDF generation:', err);
+    doc.on("error", (err) => {
+      console.error("Error in PDF generation:", err);
       res.status(500).end();
     });
 
-    // Pipe the PDF into the response
     doc.pipe(res);
 
-    // Add content to PDF
     doc.fontSize(20).text("User Membership Report", { align: "center" });
     doc.moveDown();
 
@@ -283,10 +328,9 @@ export async function userReport(req, res) {
     doc.end();
 
     // Add error handling for the response stream
-    res.on('error', (err) => {
-      console.error('Error in response stream:', err);
+    res.on("error", (err) => {
+      console.error("Error in response stream:", err);
     });
-
   } catch (error) {
     console.error("Error generating membership report:", error);
     // Only send error response if headers haven't been sent

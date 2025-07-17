@@ -11,6 +11,7 @@ import {
   RegisterUser,
   UpdateUser,
   userReport,
+  GoogleLogin,
 } from "./controller/usercontroller/usercontroller.js";
 import {
   addMembershipPackage,
@@ -49,7 +50,7 @@ import {
   ParkingBook,
   updateBookingStatus,
   updatecategory,
-  parkingReport
+  parkingReport,
 } from "./controller/parkingcontroller/parkingcontroller.js";
 import {
   Addshops,
@@ -87,6 +88,7 @@ const upload = multer({ storage });
 
 router.post("/register", RegisterUser);
 router.post("/login", LoginUser);
+router.post("/google", GoogleLogin);
 router.get("/user/:id", GetUserById);
 router.post("/purchase", Purchasing);
 router.post("/rewards", Rewards);
@@ -151,6 +153,6 @@ router.delete("/items/:id", deleteItem);
 router.get("/items/:id", getItemById);
 router.get("/transaction/report/:shopId", transactionreport);
 
-router.post("/contact",sendContactEmail)
+router.post("/contact", sendContactEmail);
 
 export default router;

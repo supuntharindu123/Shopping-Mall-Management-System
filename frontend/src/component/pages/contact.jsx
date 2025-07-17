@@ -88,12 +88,10 @@ const ContactUs = () => {
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.2 }}
             >
-              <h1 className="text-4xl font-bold text-white mb-3">
-                Contact Us
-              </h1>
+              <h1 className="text-4xl font-bold text-white mb-3">Contact Us</h1>
               <p className="text-teal-100 text-lg max-w-2xl">
-                Have questions? We'd love to hear from you. Send us a message and
-                we'll respond as soon as possible.
+                Have questions? We'd love to hear from you. Send us a message
+                and we'll respond as soon as possible.
               </p>
             </motion.div>
           </div>
@@ -292,9 +290,11 @@ const ContactUs = () => {
                         </div>
                       </div>
                       <div>
-                        <h3 className="text-lg font-medium text-gray-900">Email</h3>
+                        <h3 className="text-lg font-medium text-gray-900">
+                          Email
+                        </h3>
                         <p className="mt-1 text-gray-600">
-                          support@mallmanagement.com
+                          supuntharindu1125@gmail.com
                         </p>
                       </div>
                     </div>
@@ -319,8 +319,10 @@ const ContactUs = () => {
                         </div>
                       </div>
                       <div>
-                        <h3 className="text-lg font-medium text-gray-900">Phone</h3>
-                        <p className="mt-1 text-gray-600">+1 (123) 456-7890</p>
+                        <h3 className="text-lg font-medium text-gray-900">
+                          Phone
+                        </h3>
+                        <p className="mt-1 text-gray-600">+94 474523695</p>
                       </div>
                     </div>
 
@@ -354,7 +356,7 @@ const ContactUs = () => {
                           Location
                         </h3>
                         <p className="mt-1 text-gray-600">
-                          123 Mall Street, City, Country
+                          123 Mall Street, Colombo, Sri Lanka
                         </p>
                       </div>
                     </div>

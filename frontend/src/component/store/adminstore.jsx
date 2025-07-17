@@ -9,6 +9,13 @@ import {
   AlertTriangle,
   Clock,
   Calendar,
+  Search,
+  Filter,
+  Plus,
+  RefreshCw,
+  BarChart3,
+  Users,
+  Building2,
 } from "lucide-react";
 
 function Adminshop() {
@@ -59,9 +66,19 @@ function Adminshop() {
       minute: "2-digit",
     });
   };
+
+  // Statistics calculation
+  const stats = {
+    total: shops.length,
+    available: shops.filter((shop) => shop.status === "available").length,
+    occupied: shops.filter((shop) => shop.status === "occupied").length,
+    maintenance: shops.filter((shop) => shop.status === "maintenance").length,
+  };
+
   return (
-    <div className="container mx-auto px-4 py-8">
-      <div className="  bg-teal-900 text-white p-4 flex justify-between items-center mb-4">
+    <div className="min-h-screen bg-gray-50">
+      {/* Navigation Bar */}
+      <div className="bg-teal-900 text-white p-4 flex justify-between items-center mb-4">
         <div className="text-xl font-bold">Admin Dashboard</div>
         <div className="flex space-x-4">
           <a
@@ -86,196 +103,302 @@ function Adminshop() {
             href="/membershipadmin"
             className="bg-teal-800 hover:bg-teal-700 px-4 py-2 rounded"
           >
-            Memebership
+            Memberships
           </a>
         </div>
       </div>
 
-      <div className="flex justify-between items-center mb-6">
-        <h1 className="text-teal-900 text-4xl font-bold">
-          Shop Management Dashboard
-        </h1>
-        <a
-          href="/shopadd"
-          className="bg-teal-600 hover:bg-teal-700 text-white font-semibold px-6 py-2.5 rounded-lg transition duration-300 flex items-center gap-2"
-        >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            className="h-5 w-5"
-            viewBox="0 0 20 20"
-            fill="currentColor"
-          >
-            <path
-              fillRule="evenodd"
-              d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z"
-              clipRule="evenodd"
-            />
-          </svg>
-          Add New Shop
-        </a>
-      </div>
-
-      <div className="mb-6 grid grid-cols-1 md:grid-cols-3 gap-4">
-        <input
-          type="text"
-          placeholder="Search shops..."
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-          className="p-2 border border-gray-300 rounded focus:outline-none focus:border-teal-500"
-        />
-
-        <select
-          value={selectedCategory}
-          onChange={(e) => setSelectedCategory(e.target.value)}
-          className="p-2 border border-gray-300 rounded focus:outline-none focus:border-teal-500"
-        >
-          {categories.map((category) => (
-            <option key={category} value={category}>
-              {category.charAt(0).toUpperCase() + category.slice(1)}
-            </option>
-          ))}
-        </select>
-
-        <select
-          value={selectedFloor}
-          onChange={(e) => setSelectedFloor(e.target.value)}
-          className="p-2 border border-gray-300 rounded focus:outline-none focus:border-teal-500"
-        >
-          {floors.map((floor) => (
-            <option key={floor} value={floor}>
-              {floor === "all" ? "All Floors" : `Floor ${floor}`}
-            </option>
-          ))}
-        </select>
-      </div>
-
-      {/* Error Message */}
-      {error && (
-        <div className="bg-red-100 text-red-700 p-4 rounded mb-6">
-          {error}
-          <button
-            onClick={fetchShops}
-            className="ml-4 text-sm underline hover:no-underline"
-          >
-            Try Again
-          </button>
+      {/* Main Content */}
+      <div className="container mx-auto px-4 py-8">
+        {/* Page Header */}
+        <div className="bg-white rounded-xl shadow-sm p-6 mb-8">
+          <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4">
+            <div>
+              <h1 className="text-4xl font-bold text-teal-900 mb-2">
+                Shop Management Dashboard
+              </h1>
+              <p className="text-gray-600 text-lg">
+                Manage and monitor all shops in your mall
+              </p>
+            </div>
+            <div className="flex gap-3">
+              <a
+                href="/shopadd"
+                className="bg-teal-600 hover:bg-teal-700 text-white font-semibold px-6 py-2.5 rounded-lg transition duration-300 flex items-center gap-2"
+              >
+                <Plus className="h-5 w-5" />
+                Add New Shop
+              </a>
+            </div>
+          </div>
         </div>
-      )}
 
-      {/* Shop Cards */}
-      {loading ? (
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-teal-900 mx-auto"></div>
-          <p className="text-gray-600 mt-4">Loading shops...</p>
+        {/* Statistics Cards */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+          <div className="bg-white rounded-xl shadow-sm p-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-gray-600">Total Shops</p>
+                <p className="text-3xl font-bold text-gray-900">
+                  {stats.total}
+                </p>
+              </div>
+              <div className="bg-blue-100 p-3 rounded-full">
+                <Store className="h-8 w-8 text-blue-600" />
+              </div>
+            </div>
+          </div>
+
+          <div className="bg-white rounded-xl shadow-sm p-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-gray-600">Available</p>
+                <p className="text-3xl font-bold text-green-600">
+                  {stats.available}
+                </p>
+              </div>
+              <div className="bg-green-100 p-3 rounded-full">
+                <CircleCheck className="h-8 w-8 text-green-600" />
+              </div>
+            </div>
+          </div>
+
+          <div className="bg-white rounded-xl shadow-sm p-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-gray-600">Occupied</p>
+                <p className="text-3xl font-bold text-red-600">
+                  {stats.occupied}
+                </p>
+              </div>
+              <div className="bg-red-100 p-3 rounded-full">
+                <CircleX className="h-8 w-8 text-red-600" />
+              </div>
+            </div>
+          </div>
+
+          <div className="bg-white rounded-xl shadow-sm p-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-gray-600">Maintenance</p>
+                <p className="text-3xl font-bold text-yellow-600">
+                  {stats.maintenance}
+                </p>
+              </div>
+              <div className="bg-yellow-100 p-3 rounded-full">
+                <AlertTriangle className="h-8 w-8 text-yellow-600" />
+              </div>
+            </div>
+          </div>
         </div>
-      ) : filteredShops.length === 0 ? (
-        <p className="text-center text-gray-600">
-          No shops found matching your criteria.
-        </p>
-      ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 p-4">
-          {filteredShops.map((shop) => (
-            <a
-              href={`/adminshop/${shop._id}`}
-              key={shop._id}
-              className="bg-white rounded-2xl shadow-md hover:shadow-xl transition-shadow duration-300 overflow-hidden flex flex-col"
+
+        {/* Filters Section */}
+        <div className="bg-white rounded-xl shadow-sm p-6 mb-8">
+          <div className="flex items-center gap-2 mb-6">
+            <Filter className="h-5 w-5 text-gray-500" />
+            <h3 className="text-lg font-semibold text-gray-700">
+              Filter & Search
+            </h3>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div className="relative">
+              <Search className="absolute left-3 top-3 h-5 w-5 text-gray-400" />
+              <input
+                type="text"
+                placeholder="Search shops..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent"
+              />
+            </div>
+
+            <select
+              value={selectedCategory}
+              onChange={(e) => setSelectedCategory(e.target.value)}
+              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent"
             >
-              {shop.imageFileName ? (
-                <img
-                  src={`http://localhost:3001/uploads/${shop.imageFileName}`}
-                  alt={shop.shopName}
-                  className="w-full h-48 object-cover"
-                  onError={(e) => {
-                    e.target.onerror = null;
-                    e.target.src = "/placeholder-shop.png";
-                  }}
-                />
-              ) : (
-                <div className="w-full h-48 bg-gray-200 flex items-center justify-center text-gray-500 text-lg">
-                  No image available
-                </div>
-              )}
+              {categories.map((category) => (
+                <option key={category} value={category}>
+                  {category === "all"
+                    ? "All Categories"
+                    : category.charAt(0).toUpperCase() + category.slice(1)}
+                </option>
+              ))}
+            </select>
 
-              <div className="p-4 flex-1 flex flex-col justify-between">
-                <div className="mb-2 space-y-3">
-                  <h2 className="text-2xl font-bold text-teal-800 text-center capitalize flex items-center justify-center gap-2">
-                    <Store className="w-6 h-6" /> {shop.shopName}
-                  </h2>
+            <select
+              value={selectedFloor}
+              onChange={(e) => setSelectedFloor(e.target.value)}
+              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent"
+            >
+              {floors.map((floor) => (
+                <option key={floor} value={floor}>
+                  {floor === "all" ? "All Floors" : `Floor ${floor}`}
+                </option>
+              ))}
+            </select>
+          </div>
 
-                  <p className="text-lg text-gray-600 text-center flex items-center justify-center gap-2">
-                    <Hash className="w-5 h-5" />
-                    Shop No: {shop.shopNumber}
-                    <Layers className="w-5 h-5 ml-4" />
-                    Floor: {shop.floor}
-                  </p>
+          {/* Results Summary */}
+          <div className="mt-4 p-3 bg-gray-50 rounded-lg">
+            <p className="text-sm text-gray-600">
+              Showing{" "}
+              <span className="font-semibold">{filteredShops.length}</span> of{" "}
+              <span className="font-semibold">{shops.length}</span> shops
+            </p>
+          </div>
+        </div>
 
-                  <p className="text-lg text-gray-600 text-center flex items-center justify-center gap-2">
-                    <Tag className="w-5 h-5" />
-                    Category: {shop.category}
-                  </p>
+        {/* Error Message */}
+        {error && (
+          <div className="bg-red-50 border border-red-200 text-red-700 px-6 py-4 rounded-lg mb-8">
+            <div className="flex items-center justify-between">
+              <span className="font-medium">{error}</span>
+              <button
+                onClick={fetchShops}
+                className="text-sm underline hover:no-underline"
+              >
+                Try Again
+              </button>
+            </div>
+          </div>
+        )}
 
-                  {/* Add Operating Hours */}
-                  <div className="text-gray-600 text-center">
-                    <div className="flex items-center justify-center gap-2">
-                      <Clock className="w-5 h-5" />
-                      <span>
-                        {shop.openTime && shop.closeTime
-                          ? `${formatTime(shop.openTime)} - ${formatTime(
-                              shop.closeTime
-                            )}`
-                          : "Hours not specified"}
-                      </span>
+        {/* Shop Cards */}
+        {loading ? (
+          <div className="bg-white rounded-xl shadow-sm p-12">
+            <div className="text-center">
+              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-teal-600 mx-auto"></div>
+              <p className="text-gray-600 mt-4">Loading shops...</p>
+            </div>
+          </div>
+        ) : filteredShops.length === 0 ? (
+          <div className="bg-white rounded-xl shadow-sm p-12">
+            <div className="text-center">
+              <Store className="h-16 w-16 text-gray-400 mx-auto mb-4" />
+              <p className="text-xl text-gray-600 mb-2">No shops found</p>
+              <p className="text-gray-500">
+                {shops.length === 0
+                  ? "No shops have been added yet."
+                  : "No shops match your current filters."}
+              </p>
+            </div>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {filteredShops.map((shop) => (
+              <a
+                href={`/adminshop/${shop._id}`}
+                key={shop._id}
+                className="bg-white rounded-xl shadow-sm hover:shadow-md transition-shadow duration-300 overflow-hidden"
+              >
+                {/* Shop Image */}
+                {shop.imageFileName ? (
+                  <img
+                    src={`http://localhost:3001/uploads/${shop.imageFileName}`}
+                    alt={shop.shopName}
+                    className="w-full h-48 object-cover"
+                    onError={(e) => {
+                      e.target.onerror = null;
+                      e.target.src = "/placeholder-shop.png";
+                    }}
+                  />
+                ) : (
+                  <div className="w-full h-48 bg-gray-200 flex items-center justify-center">
+                    <Store className="h-16 w-16 text-gray-400" />
+                  </div>
+                )}
+
+                {/* Shop Details */}
+                <div className="p-6">
+                  <div className="mb-4">
+                    <h3 className="text-xl font-bold text-teal-800 mb-3 flex items-center gap-2">
+                      <Store className="w-5 h-5" />
+                      {shop.shopName}
+                    </h3>
+
+                    <div className="space-y-2 text-gray-600">
+                      <div className="flex items-center gap-2">
+                        <Hash className="w-4 h-4" />
+                        <span>Shop No: {shop.shopNumber}</span>
+                      </div>
+
+                      <div className="flex items-center gap-2">
+                        <Layers className="w-4 h-4" />
+                        <span>Floor: {shop.floor}</span>
+                      </div>
+
+                      <div className="flex items-center gap-2">
+                        <Tag className="w-4 h-4" />
+                        <span>Category: {shop.category}</span>
+                      </div>
+
+                      <div className="flex items-center gap-2">
+                        <Clock className="w-4 h-4" />
+                        <span>
+                          {shop.openTime && shop.closeTime
+                            ? `${formatTime(shop.openTime)} - ${formatTime(
+                                shop.closeTime
+                              )}`
+                            : "Hours not specified"}
+                        </span>
+                      </div>
                     </div>
                   </div>
 
-                  {/* Add Operating Days */}
-                  <div className="flex flex-wrap justify-center gap-1">
-                    {shop.operatingDays &&
-                      Object.entries(shop.operatingDays).map(
-                        ([day, isOpen]) => (
-                          <span
-                            key={day}
-                            className={`text-xs px-2 py-1 rounded-full ${
-                              isOpen
-                                ? "bg-teal-100 text-teal-800"
-                                : "bg-gray-100 text-gray-500"
-                            }`}
-                          >
-                            {day.slice(0, 3)}
-                          </span>
-                        )
+                  {/* Operating Days */}
+                  {shop.operatingDays && (
+                    <div className="mb-4">
+                      <div className="flex flex-wrap gap-1">
+                        {Object.entries(shop.operatingDays).map(
+                          ([day, isOpen]) => (
+                            <span
+                              key={day}
+                              className={`text-xs px-2 py-1 rounded-full ${
+                                isOpen
+                                  ? "bg-teal-100 text-teal-800"
+                                  : "bg-gray-100 text-gray-500"
+                              }`}
+                            >
+                              {day.slice(0, 3)}
+                            </span>
+                          )
+                        )}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Status */}
+                  <div className="pt-4 border-t border-gray-100">
+                    <span
+                      className={`inline-flex items-center px-4 py-2 rounded-full text-sm font-medium ${
+                        shop.status === "available"
+                          ? "bg-green-100 text-green-700"
+                          : shop.status === "occupied"
+                          ? "bg-red-100 text-red-700"
+                          : "bg-yellow-100 text-yellow-700"
+                      }`}
+                    >
+                      {shop.status === "available" && (
+                        <CircleCheck className="w-4 h-4 mr-1" />
                       )}
+                      {shop.status === "occupied" && (
+                        <CircleX className="w-4 h-4 mr-1" />
+                      )}
+                      {shop.status !== "available" &&
+                        shop.status !== "occupied" && (
+                          <AlertTriangle className="w-4 h-4 mr-1" />
+                        )}
+                      {shop.status}
+                    </span>
                   </div>
                 </div>
-
-                <div className="text-center mt-3">
-                  <span
-                    className={`inline-flex items-center justify-center px-36 py-2 text-sm font-semibold rounded-full capitalize  ${
-                      shop.status === "available"
-                        ? "bg-green-100 text-green-700"
-                        : shop.status === "occupied"
-                        ? "bg-red-100 text-red-700"
-                        : "bg-yellow-100 text-yellow-700"
-                    }`}
-                  >
-                    {shop.status === "available" && (
-                      <CircleCheck className="w-5 h-5 mr-1" />
-                    )}
-                    {shop.status === "occupied" && (
-                      <CircleX className="w-5 h-5 mr-1" />
-                    )}
-                    {shop.status !== "available" &&
-                      shop.status !== "occupied" && (
-                        <AlertTriangle className="w-5 h-5 mr-1" />
-                      )}
-                    {shop.status}
-                  </span>
-                </div>
-              </div>
-            </a>
-          ))}
-        </div>
-      )}
+              </a>
+            ))}
+          </div>
+        )}
+      </div>
     </div>
   );
 }

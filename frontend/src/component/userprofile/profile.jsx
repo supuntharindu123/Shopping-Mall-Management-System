@@ -253,7 +253,9 @@ const UserProfile = () => {
                 <div className="relative">
                   <img
                     src={
-                      filePreview || user.profilePhoto || DEFAULT_PROFILE_PHOTO
+                      filePreview ||
+                      user.profilePicture ||
+                      DEFAULT_PROFILE_PHOTO
                     }
                     alt="Profile"
                     className="w-16 h-16 md:w-20 md:h-20 rounded-full object-cover border-2 border-white"
@@ -345,7 +347,7 @@ const UserProfile = () => {
                   <h2 className="text-xl font-bold text-teal-900">
                     Profile Information
                   </h2>
-                  {!editMode ? (
+                  {/* {!editMode ? (
                     <button
                       onClick={handleEdit}
                       className="flex items-center bg-gray-400 text-white px-4 py-2 rounded-lg hover:bg-gray-500"
@@ -359,7 +361,7 @@ const UserProfile = () => {
                     >
                       Save Changes
                     </button>
-                  )}
+                  )} */}
                 </div>
 
                 {editMode ? (
